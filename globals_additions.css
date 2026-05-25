@@ -1,0 +1,75 @@
+/* ── Adicionar ao final de globals.css ─────────────────────────────────────── */
+
+/* Header: usuário logado */
+.hdr-user { display: flex; align-items: center; flex-shrink: 0; margin-left: 8px; }
+
+.hdr-logged {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 30px; padding: 4px 12px 4px 4px;
+}
+.hdr-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.hdr-username { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+.hdr-logout {
+  background: none; border: none; color: var(--text3);
+  font-size: 12px; cursor: pointer; padding: 2px 4px;
+  border-radius: 4px; transition: color .2s;
+  line-height: 1;
+}
+.hdr-logout:hover { color: var(--red); }
+
+.hdr-login-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: #1b2838; color: #c7d5e0;
+  border: 1px solid #2a475e;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  text-decoration: none; white-space: nowrap;
+  transition: all .2s;
+}
+.hdr-login-btn:hover { background: #2a475e; border-color: #4a8cbf; color: #fff; }
+
+/* Hero: área de login */
+.hero-login-area {
+  max-width: 500px; margin: 0 auto; margin-top: 20px;
+  animation: fadeUp .7s .3s ease both;
+}
+.hero-divider {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text3); font-size: 12px; margin-bottom: 14px;
+}
+.hero-divider::before, .hero-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.hero-steam-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 13px 20px;
+  background: #1b2838; color: #c7d5e0;
+  border: 1px solid #2a475e; border-radius: var(--radius);
+  font-family: var(--font); font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: all .2s;
+}
+.hero-steam-btn:hover {
+  background: #2a475e; border-color: #4a8cbf; color: #fff;
+  transform: translateY(-1px); box-shadow: 0 8px 24px rgba(42,71,94,.4);
+}
+
+/* Hero nav pills */
+.hero-nav-pill {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); border-radius: var(--radius-sm);
+  padding: 8px 20px; font-family: var(--font); font-size: 14px;
+  cursor: pointer; transition: all .2s;
+}
+.hero-nav-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Página de login (/login) ─────────────────────────────────────────────── */
+/* (estilos injetados via <style jsx> no login.jsx — não precisam estar aqui)  */
+
+/* ── Responsive: hdr-user ── */
+@media(max-width: 768px) {
+  .hdr-username { display: none; }
+  .hdr-logged { padding: 4px; }
+  .hdr-login-btn span { display: none; }
+}
