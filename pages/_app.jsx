@@ -1,4 +1,5 @@
 // pages/_app.jsx
+import '../styles/globals.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Analytics } from '@vercel/analytics/next';
@@ -7,24 +8,22 @@ export default function App({ Component, pageProps }) {
   const router = useRouter();
   const [steamUser, setSteamUser] = useState(null);
 
-  // Lê o SteamID64 da URL após o callback de login
+  // Lê o SteamID64 da URL após o callback de login OAuth
   useEffect(() => {
     const { steamid, login, error } = router.query;
 
     if (login === 'success' && steamid) {
-      // Salva no sessionStorage para persistir durante a sessão
       sessionStorage.setItem('steamid', steamid);
 
-      // Busca o perfil e salva os dados do usuário
       fetch(`/api/player?steamid=${steamid}`)
         .then(r => r.json())
         .then(data => {
           const player = data?.response?.players?.[0];
           if (player) {
             const userData = {
-              steamid: player.steamid,
-              username: player.personaname,
-              avatar: player.avatarmedium || player.avatar,
+              steamid:    player.steamid,
+              username:   player.personaname,
+              avatar:     player.avatarmedium || player.avatar,
               profileUrl: player.profileurl,
             };
             setSteamUser(userData);
@@ -33,9 +32,8 @@ export default function App({ Component, pageProps }) {
         })
         .catch(console.error);
 
-      // Remove os parâmetros da URL para limpar o histórico
-      const cleanUrl = router.pathname;
-      router.replace(cleanUrl, undefined, { shallow: true });
+      // Limpa os parâmetros da URL
+      router.replace(router.pathname, undefined, { shallow: true });
     }
 
     if (error) {
@@ -44,15 +42,12 @@ export default function App({ Component, pageProps }) {
     }
   }, [router.query]);
 
-  // Restaura o usuário do sessionStorage ao recarregar a página
+  // Restaura sessão ao recarregar
   useEffect(() => {
     const saved = sessionStorage.getItem('steamUser');
     if (saved) {
-      try {
-        setSteamUser(JSON.parse(saved));
-      } catch {
-        sessionStorage.removeItem('steamUser');
-      }
+      try { setSteamUser(JSON.parse(saved)); }
+      catch { sessionStorage.removeItem('steamUser'); }
     }
   }, []);
 
