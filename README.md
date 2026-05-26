@@ -1,34 +1,25 @@
-# CS2HUB — Plataforma de Rankings e Perfis para Counter-Strike 2
+# CS2HUB — Deploy no Vercel
 
-Site completo de CS2 com login Steam, ranking global, perfis detalhados e inventário valorizado. Hospedado 100% no **Cloudflare Pages** — grátis, sem servidor próprio.
-
----
-
-## ✨ Funcionalidades
-
-- 🔐 **Login via Steam (OpenID 2.0)** — Autenticação oficial, sem senhas
-- 🏆 **Ranking Global** — Todos os jogadores que logaram, ordenável por ELO, horas, K/D, nível Steam e valor de inventário
-- 📊 **Perfil Completo** — Kills, mortes, K/D, headshot %, arma favorita, MVPs, bombas plantadas
-- 💰 **Inventário Valorizado** — Todos os itens CS2 com preços do Steam Market em USD e R$
-- 🔍 **Pesquisa de Jogadores** — Busque qualquer jogador pelo nick
-- 💾 **Banco de dados Cloudflare KV** — Armazena todos os jogadores automaticamente
-- 📱 **Responsivo** — Funciona em mobile e desktop
+Guia completo para hospedar o CS2HUB no Vercel com Vercel KV (Redis).
 
 ---
 
 ## 🚀 Deploy Passo a Passo
 
-### 1. Criar conta no Cloudflare Pages
+### 1. Criar conta no Vercel
 
-1. Acesse [cloudflare.com](https://cloudflare.com) e crie uma conta gratuita
-2. No painel, clique em **Workers & Pages** → **Pages**
+Acesse [vercel.com](https://vercel.com) e crie uma conta gratuita (pode entrar com GitHub).
+
+---
 
 ### 2. Obter a Steam API Key
 
 1. Acesse [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)
 2. Faça login com sua conta Steam
-3. Em "Domain Name" coloque o domínio do seu site (ex: `cs2hub.pages.dev`)
+3. Em "Domain Name" coloque o domínio do seu site (ex: `cs2hub.vercel.app`)
 4. Copie a **API Key** gerada
+
+---
 
 ### 3. Criar repositório no GitHub
 
@@ -40,70 +31,86 @@ git remote add origin https://github.com/SEU_USUARIO/cs2hub.git
 git push -u origin main
 ```
 
-### 4. Conectar ao Cloudflare Pages
+---
 
-1. No painel Cloudflare → **Pages** → **Create a project**
-2. Selecione **Connect to Git** → autorize o GitHub
-3. Escolha o repositório `cs2hub`
-4. Configurações de build:
-   - **Framework preset:** None
-   - **Build command:** (deixe vazio)
-   - **Build output directory:** `/` (raiz)
-5. Clique em **Save and Deploy**
+### 4. Criar projeto no Vercel
 
-### 5. Criar o KV Namespace
+1. No painel Vercel → **Add New → Project**
+2. Importe o repositório `cs2hub` do GitHub
+3. Configurações de build:
+   - **Framework Preset:** Other
+   - **Build Command:** (deixe vazio)
+   - **Output Directory:** `.` (ponto — raiz do projeto)
+4. **Não clique em Deploy ainda** — configure o KV primeiro
 
-1. No painel Cloudflare → **Workers & Pages** → **KV**
-2. Clique em **Create a namespace**
-3. Nome: `PLAYERS_DB`
-4. Clique em **Add**
+---
 
-### 6. Vincular KV ao projeto Pages
+### 5. Criar o Vercel KV (banco de dados)
 
-1. Vá em **Pages** → selecione seu projeto → **Settings** → **Functions**
-2. Em **KV namespace bindings**, clique em **Add binding**
-3. Variable name: `PLAYERS_DB`
-4. KV namespace: selecione `PLAYERS_DB`
-5. Salve
+1. No painel Vercel → **Storage** → **Create Database**
+2. Escolha **KV (Redis)**
+3. Nome: `players-db`
+4. Região: escolha a mais próxima (ex: São Paulo — `gru1`)
+5. Clique em **Create**
+6. Na página do KV criado → **Connect to Project** → selecione seu projeto `cs2hub`
+7. Isso adicionará automaticamente as variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` ao projeto
 
-### 7. Configurar variáveis de ambiente
+---
 
-1. No projeto Pages → **Settings** → **Environment variables**
-2. Adicione as seguintes variáveis em **Production** e **Preview**:
+### 6. Configurar variáveis de ambiente
 
-| Variable | Value |
-|----------|-------|
-| `STEAM_API_KEY` | Sua chave da Steam API |
-| `SITE_URL` | `https://seusite.pages.dev` (URL do seu site) |
+No projeto Vercel → **Settings** → **Environment Variables**, adicione:
 
-### 8. Deploy automático
+| Variable | Value | Environments |
+|----------|-------|-------------|
+| `STEAM_API_KEY` | Sua chave da Steam API | Production, Preview, Development |
+| `SITE_URL` | `https://seusite.vercel.app` | Production, Preview, Development |
 
-A partir daqui, qualquer `git push` para a branch `main` fará deploy automático:
+> As variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` já foram adicionadas automaticamente no passo 5.
+
+---
+
+### 7. Deploy
+
+Agora faça o deploy:
 
 ```bash
 git add .
-git commit -m "Update"
+git commit -m "Deploy inicial"
 git push
 ```
+
+O Vercel fará o deploy automaticamente. A partir daqui, qualquer `git push` para `main` atualiza o site.
+
+---
+
+### 8. Atualizar o SITE_URL
+
+Após o primeiro deploy, copie a URL gerada (ex: `https://cs2hub.vercel.app`) e atualize a variável `SITE_URL` nas configurações.
+
+Também atualize o campo "Domain Name" na sua Steam API Key com essa URL.
 
 ---
 
 ## 🔧 Desenvolvimento Local
 
-Para testar localmente, instale o Wrangler:
-
 ```bash
-npm install -g wrangler
-wrangler login
-wrangler pages dev . --kv PLAYERS_DB
+npm install
+npm install -g vercel
+vercel login
+vercel dev
 ```
 
-Configure as variáveis locais no arquivo `.dev.vars`:
+Crie o arquivo `.env.local` na raiz:
 
 ```env
 STEAM_API_KEY=sua_chave_aqui
-SITE_URL=http://localhost:8788
+SITE_URL=http://localhost:3000
+KV_REST_API_URL=URL_do_seu_KV_no_painel_Vercel
+KV_REST_API_TOKEN=TOKEN_do_seu_KV_no_painel_Vercel
 ```
+
+> Para pegar `KV_REST_API_URL` e `KV_REST_API_TOKEN` localmente: no painel Vercel → Storage → seu KV → **`.env.local` Snippet** → copie e cole no seu arquivo.
 
 ---
 
@@ -124,15 +131,29 @@ SITE_URL=http://localhost:8788
 │   ├── ranking.js      # Lógica do ranking
 │   ├── inventory.js    # Exibição do inventário
 │   └── search.js       # Pesquisa + perfil de jogador
-├── functions/
-│   ├── steam-callback.js   # Valida retorno do OpenID Steam
-│   ├── steam-profile.js    # Busca perfil + stats CS2
-│   ├── steam-inventory.js  # Inventário + preços Steam Market
-│   ├── ranking.js          # Lista ordenada de jogadores
-│   └── search.js           # Pesquisa por nick no KV
-├── _redirects          # Regras de roteamento
+├── api/                          ← antes era /functions (Cloudflare)
+│   ├── steam-callback.js         # Valida retorno OpenID Steam
+│   ├── steam-profile.js          # Busca perfil + stats CS2
+│   ├── steam-inventory.js        # Inventário + preços Steam Market
+│   ├── ranking.js                # Lista ordenada de jogadores
+│   └── search.js                 # Pesquisa por nick no KV
+├── vercel.json         # Rotas e configurações
+├── package.json        # Dependência: @vercel/kv
 └── README.md
 ```
+
+---
+
+## 🔄 Diferenças: Cloudflare Pages → Vercel
+
+| Cloudflare Pages | Vercel |
+|-----------------|--------|
+| `/functions/*.js` | `/api/*.js` |
+| `Request` / `Response` Web API | `req` / `res` Node.js |
+| `env.PLAYERS_DB.get()` (KV Cloudflare) | `kv.get()` via `@vercel/kv` |
+| `env.PLAYERS_DB.set()` | `kv.set()` |
+| `_redirects` | `vercel.json` |
+| `PLAYERS_DB` binding manual | `KV_REST_API_URL` + `KV_REST_API_TOKEN` automáticos |
 
 ---
 
@@ -151,24 +172,9 @@ SITE_URL=http://localhost:8788
 ## 🔑 Segurança
 
 - A `STEAM_API_KEY` **nunca** é exposta ao frontend
-- Todas as chamadas à Steam API passam pelas **Cloudflare Functions** (serverless)
+- Todas as chamadas à Steam API passam pelas **Vercel Serverless Functions**
 - Validação OpenID feita server-side
 - XSS prevenido com escape de HTML em todo conteúdo dinâmico
-
----
-
-## 🎨 Customização
-
-Para alterar o nome do site, edite o `<title>` nos HTMLs e o logo na navbar (busque por `CS2HUB`).
-
-Para alterar cores, edite as variáveis CSS no início de `css/style.css`:
-
-```css
-:root {
-  --orange: #f0820f;   /* cor principal */
-  --bg-primary: #0a0b0d; /* fundo */
-}
-```
 
 ---
 

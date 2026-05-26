@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/steam-callback", "dest": "/api/steam-callback.js" },
+    { "src": "/steam-profile",  "dest": "/api/steam-profile.js"  },
+    { "src": "/steam-inventory","dest": "/api/steam-inventory.js"},
+    { "src": "/ranking",        "dest": "/api/ranking.js"        },
+    { "src": "/search",         "dest": "/api/search.js"         },
+    { "src": "/(.*)\\.html",    "dest": "/$1.html"               },
+    { "src": "/",               "dest": "/index.html"            }
+  ]
+}
