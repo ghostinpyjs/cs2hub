@@ -23,7 +23,7 @@ const AUTH = {
   // Redirect to Steam OpenID
   loginWithSteam() {
     const siteUrl = window.location.origin;
-    const returnTo = encodeURIComponent(`${siteUrl}/functions/steam-callback`);
+    const returnTo = encodeURIComponent(`${siteUrl}/steam-callback`);
     const realm    = encodeURIComponent(siteUrl);
     const steamUrl =
       `https://steamcommunity.com/openid/login` +
@@ -45,7 +45,7 @@ const AUTH = {
     // Fetch full profile from our function
     try {
       UI.showGlobalLoading('Carregando perfil Steam...');
-      const res  = await fetch(`/functions/steam-profile?steamid=${steamId}`);
+      const res  = await fetch(`/steam-profile?steamid=${steamId}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       AUTH.setUser(data);
