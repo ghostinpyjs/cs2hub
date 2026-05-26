@@ -1,32 +1,29 @@
 // api/steam-callback.js
-// Valida retorno OpenID 2.0 da Steam e salva jogador no Vercel KV
+import { createClient } from "@supabase/supabase-js";
 
-import { createClient } from "@vercel/kv";
+const supabase = () => createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 export default async function handler(req, res) {
-  const rawUrl = req.url.includes("?") ? req.url : `/?`;
+  const rawUrl = req.url.includes("?") ? req.url : "/?";
   const params = new URLSearchParams(rawUrl.split("?")[1] || "");
   const claimed_id = params.get("openid.claimed_id") || "";
   const steamId = claimed_id.match(/\/id\/(\d+)$/)?.[1];
 
-  if (!steamId) {
-    return res.redirect("/?error=invalid_openid");
-  }
+  if (!steamId) return res.redirect("/?error=invalid_openid");
 
   // Validar com Steam
   const verifyParams = new URLSearchParams(params);
   verifyParams.set("openid.mode", "check_authentication");
-
   const verifyRes = await fetch("https://steamcommunity.com/openid/login", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: verifyParams.toString(),
   });
   const verifyText = await verifyRes.text();
-
-  if (!verifyText.includes("is_valid:true")) {
-    return res.redirect("/?error=openid_failed");
-  }
+  if (!verifyText.includes("is_valid:true")) return res.redirect("/?error=openid_failed");
 
   // Buscar perfil básico da Steam
   const profileRes = await fetch(
@@ -34,47 +31,23 @@ export default async function handler(req, res) {
   );
   const profileData = await profileRes.json();
   const player = profileData?.response?.players?.[0];
+  if (!player) return res.redirect("/?error=profile_not_found");
 
-  if (!player) {
-    return res.redirect("/?error=profile_not_found");
-  }
+  // Salvar no Supabase
+  const db = supabase();
+  const { data: existing } = await db.from("players").select("*").eq("steam_id", steamId).single();
 
-  // Salvar no Vercel KV
-  const kv = createClient({
-    url: process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-  });
+  const playerData = {
+    steam_id: steamId,
+    nick: player.personaname,
+    avatar: player.avatarfull,
+    profile_url: player.profileurl,
+    last_login: Date.now(),
+    ...(existing ? {} : { elo: 0, kills: 0, deaths: 0, kd: "0.00", hs_percent: "0.0", mvps: 0, hours: 0, steam_level: 0, inventory_value: 0, fav_weapon: "N/D", wins: 0, created_at: Date.now() }),
+  };
 
-  const existing = await kv.get(`player:${steamId}`);
-  const playerData = existing
-    ? { ...existing, avatar: player.avatarfull, nick: player.personaname, lastLogin: Date.now() }
-    : {
-        steamId,
-        nick: player.personaname,
-        avatar: player.avatarfull,
-        profileUrl: player.profileurl,
-        elo: 0,
-        kills: 0,
-        deaths: 0,
-        kd: 0,
-        hsPercent: 0,
-        mvps: 0,
-        hours: 0,
-        steamLevel: 0,
-        inventoryValue: 0,
-        createdAt: Date.now(),
-        lastLogin: Date.now(),
-      };
+  await db.from("players").upsert(playerData, { onConflict: "steam_id" });
 
-  await kv.set(`player:${steamId}`, playerData);
-
-  // Adicionar ao índice de todos os jogadores
-  await kv.sadd("players:all", steamId);
-
-  // Redirecionar com cookie de sessão simples
-  res.setHeader(
-    "Set-Cookie",
-    `steamId=${steamId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
-  );
+  res.setHeader("Set-Cookie", `steamId=${steamId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`);
   return res.redirect("/perfil.html");
 }
