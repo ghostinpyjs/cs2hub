@@ -3,7 +3,6 @@
 const AUTH = {
   STORAGE_KEY: 'cs2hub_user',
 
-  // Returns user object or null
   getUser() {
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
@@ -20,7 +19,6 @@ const AUTH = {
     window.location.href = '/';
   },
 
-  // Redirect to Steam OpenID
   loginWithSteam() {
     const siteUrl = window.location.origin;
     const returnTo = encodeURIComponent(`${siteUrl}/steam-callback`);
@@ -36,20 +34,19 @@ const AUTH = {
     window.location.href = steamUrl;
   },
 
-  // Called on page load — check if we just returned from Steam callback
+  // Chamado ao carregar a página — verifica se voltou do callback com ?steamid=
   async handleCallback() {
-    const params = new URLSearchParams(window.location.search);
+    const params  = new URLSearchParams(window.location.search);
     const steamId = params.get('steamid');
     if (!steamId) return;
 
-    // Fetch full profile from our function
     try {
       UI.showGlobalLoading('Carregando perfil Steam...');
       const res  = await fetch(`/steam-profile?steamid=${steamId}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       AUTH.setUser(data);
-      // Clean up URL
+      // Limpar ?steamid= da URL sem recarregar a página
       window.history.replaceState({}, '', window.location.pathname);
     } catch (err) {
       console.error('Callback error:', err);
@@ -58,7 +55,6 @@ const AUTH = {
     }
   },
 
-  // Render user in navbar
   renderNav() {
     const user = this.getUser();
     const loginArea = document.getElementById('nav-login-area');
@@ -68,8 +64,9 @@ const AUTH = {
       loginArea.innerHTML = `
         <div class="nav-user">
           <a href="/perfil.html" style="display:flex;align-items:center;gap:.6rem;text-decoration:none">
-            <img class="nav-avatar" src="${user.avatar}" alt="${user.personaname}" onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'">
-            <span class="nav-username">${user.personaname}</span>
+            <img class="nav-avatar" src="${user.avatar}" alt="${user.nick || user.personaname}"
+                 onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'">
+            <span class="nav-username">${user.nick || user.personaname}</span>
           </a>
           <button class="btn btn-outline btn-sm" onclick="AUTH.logout()">Sair</button>
         </div>`;
@@ -82,8 +79,6 @@ const AUTH = {
     }
   }
 };
-
-// ─── Global UI helpers ────────────────────────────────────
 
 const UI = {
   showGlobalLoading(msg = 'Carregando...') {
@@ -105,20 +100,17 @@ const UI = {
   }
 };
 
-// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', async () => {
   AUTH.renderNav();
   await AUTH.handleCallback();
-  AUTH.renderNav(); // re-render after possible callback
+  AUTH.renderNav(); // re-renderiza após callback para mostrar o usuário logado
 
-  // Highlight active nav link
   const path = window.location.pathname.replace(/\/$/, '') || '/';
   document.querySelectorAll('.nav-links a').forEach(a => {
     const href = new URL(a.href, location.origin).pathname.replace(/\/$/, '') || '/';
     if (href === path) a.classList.add('active');
   });
 
-  // Global search in navbar
   const navSearchForm = document.getElementById('nav-search-form');
   if (navSearchForm) {
     navSearchForm.addEventListener('submit', e => {

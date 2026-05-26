@@ -36,18 +36,20 @@ export default async function handler(req, res) {
   // Salvar no Supabase
   const db = supabase();
   const { data: existing } = await db.from("players").select("*").eq("steam_id", steamId).single();
-
   const playerData = {
     steam_id: steamId,
     nick: player.personaname,
     avatar: player.avatarfull,
     profile_url: player.profileurl,
     last_login: Date.now(),
-    ...(existing ? {} : { elo: 0, kills: 0, deaths: 0, kd: "0.00", hs_percent: "0.0", mvps: 0, hours: 0, steam_level: 0, inventory_value: 0, fav_weapon: "N/D", wins: 0, created_at: Date.now() }),
+    ...(existing ? {} : {
+      elo: 0, kills: 0, deaths: 0, kd: "0.00", hs_percent: "0.0",
+      mvps: 0, hours: 0, steam_level: 0, inventory_value: 0,
+      fav_weapon: "N/D", wins: 0, created_at: Date.now()
+    }),
   };
-
   await db.from("players").upsert(playerData, { onConflict: "steam_id" });
 
-  res.setHeader("Set-Cookie", `steamId=${steamId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`);
-  return res.redirect("/perfil.html");
+  // Redirecionar para perfil passando steamid na URL para o auth.js processar
+  return res.redirect(`/perfil.html?steamid=${steamId}`);
 }
