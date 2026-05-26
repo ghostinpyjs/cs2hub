@@ -1,19 +1,15 @@
 // main.js — shared utilities + home page
 
-// ─── Steam helpers ────────────────────────────────────────
-
 const STEAM = {
   async getProfile(steamId) {
-    const res = await fetch(`/functions/steam-profile?steamid=${steamId}`);
+    const res = await fetch(`/steam-profile?steamid=${steamId}`);
     return res.json();
   },
   async getInventory(steamId) {
-    const res = await fetch(`/functions/steam-inventory?steamid=${steamId}`);
+    const res = await fetch(`/steam-inventory?steamid=${steamId}`);
     return res.json();
   }
 };
-
-// ─── Formatting helpers ───────────────────────────────────
 
 const FMT = {
   number(n) {
@@ -37,7 +33,7 @@ const FMT = {
   },
   brl(usd) {
     if (!usd || isNaN(usd)) return '—';
-    const brl = usd * 5.0; // approximate rate
+    const brl = usd * 5.0;
     return 'R$ ' + brl.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   },
   usd(val) {
@@ -54,25 +50,20 @@ const FMT = {
   }
 };
 
-// ─── HOME PAGE ────────────────────────────────────────────
-
 async function initHome() {
   const user = AUTH.getUser();
 
-  // Hero section personalization
   const heroWelcome = document.getElementById('hero-welcome');
   const heroDefault = document.getElementById('hero-default');
   if (user && heroWelcome) {
     heroWelcome.classList.remove('hidden');
     if (heroDefault) heroDefault.classList.add('hidden');
     heroWelcome.querySelector('.welcome-avatar').src = user.avatar;
-    heroWelcome.querySelector('.welcome-name').textContent = user.personaname;
+    heroWelcome.querySelector('.welcome-name').textContent = user.nick || user.personaname;
   }
 
-  // Load top 5 ranking preview
   loadTop5();
 
-  // Home search form
   const homeSearch = document.getElementById('home-search-form');
   if (homeSearch) {
     homeSearch.addEventListener('submit', e => {
@@ -89,7 +80,7 @@ async function loadTop5() {
   container.innerHTML = `<div class="loading-wrap"><div class="spinner"></div><span class="loading-text">Carregando ranking...</span></div>`;
 
   try {
-    const res  = await fetch('/functions/ranking?limit=5');
+    const res  = await fetch('/ranking-api?limit=5');
     const data = await res.json();
     const players = data.players || [];
 
@@ -101,19 +92,18 @@ async function loadTop5() {
     const rankClasses = ['gold', 'silver', 'bronze', '', ''];
     container.innerHTML = `<div class="top5-grid stagger">
       ${players.map((p, i) => `
-        <a href="/jogador.html?id=${p.steamid}" class="top5-card rank-${i+1}">
+        <a href="/jogador.html?id=${p.steam_id}" class="top5-card rank-${i+1}">
           <span class="top5-rank ${rankClasses[i]}">${i+1}</span>
-          <img class="top5-avatar" src="${p.avatar || ''}" alt="${p.personaname}"
+          <img class="top5-avatar" src="${p.avatar || ''}" alt="${escHtml(p.nick)}"
                onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'">
           <div>
-            <div class="top5-name">${escHtml(p.personaname)}</div>
-            <div class="top5-score">${FMT.hours(p.stats?.total_time_played)} · KD ${FMT.kd(p.stats?.total_kills, p.stats?.total_deaths)}</div>
+            <div class="top5-name">${escHtml(p.nick)}</div>
+            <div class="top5-score">${p.hours}h · KD ${p.kd}</div>
           </div>
         </a>
       `).join('')}
     </div>`;
 
-    // Update counter
     const countEl = document.getElementById('stat-players-count');
     if (countEl && data.total) countEl.textContent = FMT.number(data.total) + '+';
 
@@ -121,8 +111,6 @@ async function loadTop5() {
     container.innerHTML = `<div class="alert alert-error">⚠ Erro ao carregar ranking</div>`;
   }
 }
-
-// ─── XSS guard ───────────────────────────────────────────
 
 function escHtml(str) {
   return String(str || '')
@@ -132,7 +120,6 @@ function escHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-// Run on home page
 if (document.getElementById('home-page')) {
   document.addEventListener('DOMContentLoaded', initHome);
 }
