@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>404 — Você Foi Eliminado | CS2HUB</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  .kill-feed {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .85rem;
+    color: var(--text-dim);
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    align-items: center;
+  }
+  .kill-feed-row { display: flex; align-items: center; gap: .6rem; }
+  .kill-feed-row .you { color: #ff7b76; }
+  .kill-feed-row .enemy { color: var(--green); }
+  .kill-feed-row .weapon {
+    background: var(--bg-card2);
+    padding: .1rem .4rem;
+    border-radius: 3px;
+    font-size: .75rem;
+    letter-spacing: .05em;
+  }
+  .blood-splat {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    opacity: .04;
+    user-select: none;
+    animation: drip 4s ease-in-out infinite;
+  }
+  @keyframes drip { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.05)} }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <div class="logo-icon">CS</div>
+    CS2<span class="accent">HUB</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/ranking.html">Ranking</a></li>
+  </ul>
+  <div id="nav-login-area"></div>
+</nav>
+
+<main class="page-404">
+  <div class="blood-splat">💀</div>
+
+  <div style="font-family:'Share Tech Mono',monospace;font-size:.85rem;letter-spacing:.2em;color:var(--red);text-transform:uppercase;opacity:.7;margin-bottom:1rem">
+    — ELIMINADO —
+  </div>
+
+  <div class="eliminated">VOCÊ FOI ELIMINADO</div>
+
+  <div class="scoreboard-mini">
+    <div style="font-size:.7rem;letter-spacing:.15em;color:var(--text-dim);text-transform:uppercase;margin-bottom:.8rem">PLACAR FINAL</div>
+    <div class="score-row">
+      <span class="you">VOCÊ</span>
+      <span style="color:var(--text-dim)">0</span>
+      <span style="color:var(--text-dim)">—</span>
+      <span style="color:var(--text-dim)">16</span>
+      <span class="site">SITE</span>
+    </div>
+    <div style="margin-top:.8rem;font-size:.7rem;color:var(--text-dim)">
+      Página não encontrada: <span style="color:var(--red)">404</span>
+    </div>
+  </div>
+
+  <div class="kill-feed">
+    <div class="kill-feed-row">
+      <span class="enemy">CS2HUB</span>
+      <span class="weapon">AWP</span>
+      <span class="you">PÁGINA_404</span>
+    </div>
+    <div class="kill-feed-row" style="opacity:.6">
+      <span class="enemy">CS2HUB</span>
+      <span class="weapon">AK-47</span>
+      <span class="you">SUA_URL</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <a href="/" class="btn btn-primary">↩ Voltar ao Início</a>
+    <a href="/ranking.html" class="btn btn-outline">Ver Ranking</a>
+  </div>
+
+  <p style="margin-top:2rem;font-size:.8rem;color:var(--text-dim)">
+    Dica: Tente usar a pesquisa de jogadores ou o menu de navegação.
+  </p>
+</main>
+
+<script src="/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CS2HUB — Rankings, Perfis e Inventários</title>
+<meta name="description" content="Veja rankings, perfis completos e inventários de jogadores de CS2. Login com Steam.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <div class="logo-icon">CS</div>
+    CS2<span class="accent">HUB</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/" class="active">Home</a></li>
+    <li><a href="/ranking.html">Ranking</a></li>
+    <li><a href="/jogador.html">Pesquisar</a></li>
+  </ul>
+  <form class="nav-search" id="nav-search-form">
+    <input id="nav-search-input" type="text" placeholder="Buscar jogador...">
+    <button type="submit">🔍</button>
+  </form>
+  <div id="nav-login-area"></div>
+</nav>
+
+<main id="home-page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-crosshair"></div>
+
+    <!-- Default hero (not logged in) -->
+    <div id="hero-default">
+      <p class="hero-eyebrow">// Counter-Strike 2 — Stats Platform</p>
+      <h1 class="hero-title">
+        <span class="line1">DOMINE O</span><br>
+        <span class="line2">RANKING</span>
+      </h1>
+      <p class="hero-sub">
+        Login com Steam para ver suas estatísticas completas, inventário valorizado e posição no ranking global.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-steam" onclick="AUTH.loginWithSteam()">
+          <img src="https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png" alt="Steam" style="height:18px;width:auto">
+          Entrar com Steam
+        </button>
+        <a href="/ranking.html" class="btn btn-outline">Ver Ranking →</a>
+      </div>
+    </div>
+
+    <!-- Welcome (logged in) -->
+    <div id="hero-welcome" class="hidden">
+      <p class="hero-eyebrow">// Bem-vindo de volta</p>
+      <div style="display:flex;align-items:center;gap:1.2rem;justify-content:center;margin-bottom:1rem">
+        <img class="welcome-avatar" src="" alt="" style="width:64px;height:64px;border-radius:8px;border:3px solid var(--orange)">
+        <h2 class="hero-title" style="font-size:clamp(2rem,5vw,3.5rem)"><span class="welcome-name"></span></h2>
+      </div>
+      <div class="hero-actions">
+        <a href="/perfil.html" class="btn btn-primary">Meu Perfil</a>
+        <a href="/ranking.html" class="btn btn-outline">Ver Ranking →</a>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat-item">
+        <div class="hero-stat-num" id="stat-players-count">0</div>
+        <div class="hero-stat-label">Jogadores</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">CS2</div>
+        <div class="hero-stat-label">Exclusivo</div>
+      </div>
+      <div class="hero-stat-item">
+        <div class="hero-stat-num">∞</div>
+        <div class="hero-stat-label">Estatísticas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH BAR -->
+  <section style="background:var(--bg-secondary);border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);padding:2rem">
+    <div style="max-width:700px;margin:0 auto;text-align:center">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">
+        PESQUISAR QUALQUER JOGADOR
+      </p>
+      <form id="home-search-form" style="display:flex;gap:.5rem">
+        <div class="search-input-wrap" style="flex:1">
+          <span class="search-icon">🔍</span>
+          <input id="home-search-input" type="text" placeholder="Digite o nick do jogador..." required>
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </form>
+      <p style="font-size:.78rem;color:var(--text-dim);margin-top:.6rem">
+        Apenas jogadores que já fizeram login no site aparecem na pesquisa
+      </p>
+    </div>
+  </section>
+
+  <!-- TOP 5 PREVIEW -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <small>PLACAR GLOBAL</small>
+        Top <span class="accent">Jogadores</span>
+      </div>
+      <a href="/ranking.html" class="btn btn-outline btn-sm">Ver ranking completo →</a>
+    </div>
+    <div id="top5-container"></div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section" style="border-top:1px solid var(--border-subtle)">
+    <div class="section-title" style="text-align:center;margin-bottom:3rem">
+      <small>O QUE VOCÊ PODE FAZER</small>
+      Plataforma <span class="accent">Completa</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem" class="stagger">
+      <div class="card">
+        <div class="card-corner"></div>
+        <div style="font-size:2rem;margin-bottom:.8rem">🎖</div>
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Ranking Global</h3>
+        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
+          Compare-se com todos os jogadores por ELO, horas, K/D, nível Steam e valor de inventário.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-corner"></div>
+        <div style="font-size:2rem;margin-bottom:.8rem">📊</div>
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Estatísticas Detalhadas</h3>
+        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
+          Kills, mortes, headshot %, arma favorita, partidas jogadas, MVPs e muito mais.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-corner"></div>
+        <div style="font-size:2rem;margin-bottom:.8rem">💰</div>
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Inventário Valorizado</h3>
+        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
+          Veja todos os itens CS2 com preços do Steam Market em USD e R$, com valor total.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-corner"></div>
+        <div style="font-size:2rem;margin-bottom:.8rem">🔍</div>
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Pesquisa de Jogadores</h3>
+        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
+          Pesquise qualquer jogador pelo nick e veja seu perfil completo com stats e inventário.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>. Dados via Steam Web API.</p>
+</footer>
+
+<script src="/js/auth.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

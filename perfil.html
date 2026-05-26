@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Perfil — CS2HUB</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <div class="logo-icon">CS</div>
+    CS2<span class="accent">HUB</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/ranking.html">Ranking</a></li>
+    <li><a href="/jogador.html">Pesquisar</a></li>
+    <li><a href="/perfil.html" class="active">Meu Perfil</a></li>
+  </ul>
+  <form class="nav-search" id="nav-search-form">
+    <input id="nav-search-input" type="text" placeholder="Buscar jogador...">
+    <button type="submit">🔍</button>
+  </form>
+  <div id="nav-login-area"></div>
+</nav>
+
+<main id="profile-page" style="position:relative;z-index:1">
+  <div class="section">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:.2em;color:var(--orange);text-transform:uppercase;margin-bottom:.3rem">// Sua conta</p>
+        <h1 class="section-title" style="font-size:2rem">Meu <span class="accent">Perfil</span></h1>
+      </div>
+      <button id="btn-refresh" class="btn btn-outline btn-sm">↻ Atualizar dados</button>
+    </div>
+
+    <!-- Loading state -->
+    <div id="player-loading" class="loading-wrap">
+      <div class="spinner"></div>
+      <span class="loading-text">Carregando seu perfil...</span>
+    </div>
+
+    <!-- Error state -->
+    <div id="player-error" class="hidden"></div>
+
+    <!-- Main content (injected by JS) -->
+    <div id="player-main" class="hidden">
+      <div id="player-content"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>. Dados via Steam Web API.</p>
+</footer>
+
+<script src="/js/auth.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/inventory.js"></script>
+<script src="/js/search.js"></script>
+</body>
+</html>

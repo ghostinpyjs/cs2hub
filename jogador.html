@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jogador — CS2HUB</title>
+<meta name="description" content="Perfil completo de jogador CS2: estatísticas, inventário e ranking.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-logo">
+    <div class="logo-icon">CS</div>
+    CS2<span class="accent">HUB</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/ranking.html">Ranking</a></li>
+    <li><a href="/jogador.html" class="active">Pesquisar</a></li>
+  </ul>
+  <form class="nav-search" id="nav-search-form">
+    <input id="nav-search-input" type="text" placeholder="Buscar jogador...">
+    <button type="submit">🔍</button>
+  </form>
+  <div id="nav-login-area"></div>
+</nav>
+
+<main id="player-page" style="position:relative;z-index:1">
+  <div class="section">
+
+    <!-- Breadcrumb -->
+    <div style="display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:var(--text-dim);margin-bottom:1.5rem">
+      <a href="/" style="color:var(--text-dim)">Home</a>
+      <span>›</span>
+      <a href="/ranking.html" style="color:var(--text-dim)">Ranking</a>
+      <span>›</span>
+      <span id="page-player-name" style="color:var(--text-secondary)">Jogador</span>
+    </div>
+
+    <!-- Search bar at top -->
+    <div style="margin-bottom:2rem">
+      <form id="page-search-form" style="display:flex;gap:.5rem;max-width:500px">
+        <div class="search-input-wrap" style="flex:1">
+          <span class="search-icon">🔍</span>
+          <input id="page-search-input" type="text" placeholder="Pesquisar outro jogador...">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+      </form>
+    </div>
+
+    <!-- Loading state -->
+    <div id="player-loading" class="loading-wrap">
+      <div class="spinner"></div>
+      <span class="loading-text">Carregando jogador...</span>
+    </div>
+
+    <!-- Error state -->
+    <div id="player-error" class="hidden"></div>
+
+    <!-- Main content (injected by JS) -->
+    <div id="player-main" class="hidden">
+      <div id="player-content"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>. Dados via Steam Web API.</p>
+</footer>
+
+<script src="/js/auth.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/inventory.js"></script>
+<script src="/js/search.js"></script>
+<script>
+  // Page-specific search form
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('page-search-form')?.addEventListener('submit', e => {
+      e.preventDefault();
+      const q = document.getElementById('page-search-input')?.value.trim();
+      if (q) window.location.href = `/jogador.html?nick=${encodeURIComponent(q)}`;
+    });
+  });
+</script>
+</body>
+</html>

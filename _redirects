@@ -1,0 +1,11 @@
+# Cloudflare Pages _redirects
+# Route /functions/* to Cloudflare Pages Functions
+
+/functions/steam-callback  /functions/steam-callback.js  200
+/functions/steam-profile   /functions/steam-profile.js   200
+/functions/steam-inventory /functions/steam-inventory.js 200
+/functions/ranking         /functions/ranking.js         200
+/functions/search          /functions/search.js          200
+
+# SPA-style 404
+/*  /404.html  404
