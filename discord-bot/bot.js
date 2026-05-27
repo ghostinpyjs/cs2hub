@@ -31,7 +31,7 @@ const commands = [
     .addStringOption(o => o.setName("nick").setDescription("Nick do jogador").setRequired(true)),
 
   new SlashCommandBuilder()
-    .setName("lfg")
+    .setName("jogar")
     .setDescription("Procurar jogadores para jogar CS2")
     .addStringOption(o =>
       o.setName("modo")
