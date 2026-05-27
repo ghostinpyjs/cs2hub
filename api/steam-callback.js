@@ -14,7 +14,6 @@ export default async function handler(req, res) {
 
   if (!steamId) return res.redirect("/?error=invalid_openid");
 
-  // Validar com Steam
   const verifyParams = new URLSearchParams(params);
   verifyParams.set("openid.mode", "check_authentication");
   const verifyRes = await fetch("https://steamcommunity.com/openid/login", {
@@ -25,7 +24,6 @@ export default async function handler(req, res) {
   const verifyText = await verifyRes.text();
   if (!verifyText.includes("is_valid:true")) return res.redirect("/?error=openid_failed");
 
-  // Buscar perfil básico da Steam
   const profileRes = await fetch(
     `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${process.env.STEAM_API_KEY}&steamids=${steamId}`
   );
@@ -33,9 +31,9 @@ export default async function handler(req, res) {
   const player = profileData?.response?.players?.[0];
   if (!player) return res.redirect("/?error=profile_not_found");
 
-  // Salvar no Supabase
   const db = supabase();
   const { data: existing } = await db.from("players").select("*").eq("steam_id", steamId).single();
+
   const playerData = {
     steam_id: steamId,
     nick: player.personaname,
@@ -48,8 +46,8 @@ export default async function handler(req, res) {
       fav_weapon: "N/D", wins: 0, created_at: Date.now()
     }),
   };
+
   await db.from("players").upsert(playerData, { onConflict: "steam_id" });
 
-  // Redirecionar para perfil passando steamid na URL para o auth.js processar
   return res.redirect(`/perfil.html?steamid=${steamId}`);
 }
