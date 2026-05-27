@@ -1,4 +1,4 @@
-// auth.js — Steam OpenID authentication handling
+// auth.js
 
 const AUTH = {
   STORAGE_KEY: 'cs2hub_user',
