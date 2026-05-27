@@ -7,6 +7,9 @@
     { "source": "/steam-profile",   "destination": "/api/steam-profile"   },
     { "source": "/steam-inventory", "destination": "/api/steam-inventory" },
     { "source": "/ranking-api",     "destination": "/api/ranking"         },
-    { "source": "/search-api",      "destination": "/api/search"          }
+    { "source": "/search-api",      "destination": "/api/search"          },
+    { "source": "/api/market-list", "destination": "/api/market-list"     },
+    { "source": "/api/market-post", "destination": "/api/market-post"     },
+    { "source": "/api/admin-action","destination": "/api/admin-action"    }
   ]
 }
