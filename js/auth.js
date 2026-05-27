@@ -4,10 +4,7 @@ const AUTH = {
   STORAGE_KEY: "cs2hub_user",
 
   getUser() {
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
+    try { return JSON.parse(localStorage.getItem(this.STORAGE_KEY)); } catch { return null; }
   },
 
   setUser(data) {
@@ -20,7 +17,7 @@ const AUTH = {
   },
 
   loginWithSteam() {
-    const origin  = window.location.origin;
+    const origin   = window.location.origin;
     const returnTo = encodeURIComponent(`${origin}/api/steam-callback`);
     const realm    = encodeURIComponent(origin);
     window.location.href =
@@ -38,8 +35,7 @@ const AUTH = {
     const loginData = params.get("login");
     if (!loginData) return;
     try {
-      const user = JSON.parse(decodeURIComponent(loginData));
-      this.setUser(user);
+      this.setUser(JSON.parse(decodeURIComponent(loginData)));
       window.history.replaceState({}, "", "/");
     } catch (e) { console.error(e); }
   },
@@ -47,18 +43,34 @@ const AUTH = {
   renderNav() {
     const area = document.getElementById("nav-login-area");
     if (!area) return;
-    const user = this.getUser();
-    const id   = user?.steam_id || user?.steamid;
+    const user    = this.getUser();
+    const id      = user?.steam_id || user?.steamid;
     const isAdmin = id === ADMIN_ID;
 
-    // Adicionar link Admin no menu se for admin
+    // Adicionar link Marketplace se não existir
     const navLinks = document.querySelector('.nav-links');
-    if (navLinks && isAdmin && !document.getElementById('nav-admin-link')) {
-      const li = document.createElement('li');
-      li.id = 'nav-admin-link';
-      li.innerHTML = `<a href="/admin.html" style="color:var(--orange)">⚙ Admin</a>`;
-      navLinks.appendChild(li);
+    if (navLinks) {
+      if (!document.getElementById('nav-market-link')) {
+        const li = document.createElement('li');
+        li.id = 'nav-market-link';
+        li.innerHTML = `<a href="/marketplace.html">Marketplace</a>`;
+        navLinks.appendChild(li);
+      }
+      // Adicionar link Admin SOMENTE se for admin e ainda não existir
+      if (isAdmin && !document.getElementById('nav-admin-link')) {
+        const li = document.createElement('li');
+        li.id = 'nav-admin-link';
+        li.innerHTML = `<a href="/admin.html" style="color:var(--orange)">⚙ Admin</a>`;
+        navLinks.appendChild(li);
+      }
     }
+
+    // Highlight link ativo
+    const path = window.location.pathname.replace(/\/$/, "") || "/";
+    document.querySelectorAll(".nav-links a").forEach(a => {
+      const href = new URL(a.href, location.origin).pathname.replace(/\/$/, "") || "/";
+      a.classList.toggle("active", href === path);
+    });
 
     if (user) {
       area.innerHTML = `
@@ -73,8 +85,7 @@ const AUTH = {
     } else {
       area.innerHTML = `
         <button class="btn btn-steam" onclick="AUTH.loginWithSteam()">
-          <img src="https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png"
-               alt="Steam" style="height:18px;width:auto">
+          <img src="https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png" alt="Steam" style="height:18px;width:auto">
           Entrar com Steam
         </button>`;
     }
@@ -82,34 +93,28 @@ const AUTH = {
 };
 
 const UI = {
-  showGlobalLoading(msg = 'Carregando...') {
-    let el = document.getElementById('global-loading');
+  showGlobalLoading(msg = "Carregando...") {
+    let el = document.getElementById("global-loading");
     if (!el) {
-      el = document.createElement('div');
-      el.id = 'global-loading';
+      el = document.createElement("div");
+      el.id = "global-loading";
       el.style.cssText = `position:fixed;inset:0;background:rgba(10,11,13,.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;font-family:'Rajdhani',sans-serif;color:#9aa3b8`;
       el.innerHTML = `<div class="spinner"></div><span class="loading-text" id="global-loading-msg">${msg}</span>`;
       document.body.appendChild(el);
     } else {
-      document.getElementById('global-loading-msg').textContent = msg;
-      el.style.display = 'flex';
+      document.getElementById("global-loading-msg").textContent = msg;
+      el.style.display = "flex";
     }
   },
   hideGlobalLoading() {
-    const el = document.getElementById('global-loading');
-    if (el) el.style.display = 'none';
+    const el = document.getElementById("global-loading");
+    if (el) el.style.display = "none";
   }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   AUTH.handleCallback();
   AUTH.renderNav();
-
-  const path = window.location.pathname.replace(/\/$/, "") || "/";
-  document.querySelectorAll(".nav-links a").forEach(a => {
-    const href = new URL(a.href, location.origin).pathname.replace(/\/$/, "") || "/";
-    if (href === path) a.classList.add("active");
-  });
 
   const form = document.getElementById("nav-search-form");
   if (form) {
