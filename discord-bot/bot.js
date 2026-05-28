@@ -1,28 +1,16 @@
-import {
-  Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder,
-  ButtonBuilder, ButtonStyle, SlashCommandBuilder, REST, Routes,
-  ChannelType, PermissionFlagsBits, ComponentType
-} from "discord.js";
-import fetch from "node-fetch";
-
 const SITE_URL  = process.env.SITE_URL  || "https://cs2hubs.vercel.app";
 const TOKEN     = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
-const ORANGE    = 0xf0820f;
-const GREEN     = 0x00b894;
-const RED       = 0xe74c3c;
-const BLUE      = 0x3498db;
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildVoiceStates,
-  ]
-});
+// Diagnóstico — remover depois
+console.log("🔍 TOKEN definido?", !!TOKEN);
+console.log("🔍 CLIENT_ID definido?", !!CLIENT_ID);
+console.log("🔍 TOKEN começa com:", TOKEN?.substring(0, 10));
+
+if (!TOKEN) {
+  console.error("❌ DISCORD_TOKEN não está definido! Verifique as variáveis de ambiente no Railway.");
+  process.exit(1);
+}
 
 // Armazenar grupos ativos: messageId -> { leader, players, modo, vagas, channel }
 const gruposAtivos = new Map();
