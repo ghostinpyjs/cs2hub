@@ -8,13 +8,8 @@
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
-<!-- NAVBAR -->
 <nav class="navbar">
-  <a href="/" class="nav-logo">
-    <div class="logo-icon">CS</div>
-    CS2<span class="accent">HUB</span>
-  </a>
+  <a href="/" class="nav-logo"><div class="logo-icon">CS</div>CS2<span class="accent">HUB</span></a>
   <ul class="nav-links">
     <li><a href="/" class="active">Home</a></li>
     <li><a href="/ranking.html">Ranking</a></li>
@@ -28,22 +23,13 @@
 </nav>
 
 <main id="home-page">
-
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-crosshair"></div>
-
-    <!-- Default hero (not logged in) -->
     <div id="hero-default">
       <p class="hero-eyebrow">// Counter-Strike 2 — Stats Platform</p>
-      <h1 class="hero-title">
-        <span class="line1">DOMINE O</span><br>
-        <span class="line2">RANKING</span>
-      </h1>
-      <p class="hero-sub">
-        Login com Steam para ver suas estatísticas completas, inventário valorizado e posição no ranking global.
-      </p>
+      <h1 class="hero-title"><span class="line1">DOMINE O</span><br><span class="line2">RANKING</span></h1>
+      <p class="hero-sub">Login com Steam para ver suas estatísticas completas, inventário valorizado e posição no ranking global.</p>
       <div class="hero-actions">
         <button class="btn btn-steam" onclick="AUTH.loginWithSteam()">
           <img src="https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png" alt="Steam" style="height:18px;width:auto">
@@ -52,8 +38,6 @@
         <a href="/ranking.html" class="btn btn-outline">Ver Ranking →</a>
       </div>
     </div>
-
-    <!-- Welcome (logged in) -->
     <div id="hero-welcome" class="hidden">
       <p class="hero-eyebrow">// Bem-vindo de volta</p>
       <div style="display:flex;align-items:center;gap:1.2rem;justify-content:center;margin-bottom:1rem">
@@ -65,29 +49,16 @@
         <a href="/ranking.html" class="btn btn-outline">Ver Ranking →</a>
       </div>
     </div>
-
     <div class="hero-stats">
-      <div class="hero-stat-item">
-        <div class="hero-stat-num" id="stat-players-count">0</div>
-        <div class="hero-stat-label">Jogadores</div>
-      </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-num">CS2</div>
-        <div class="hero-stat-label">Exclusivo</div>
-      </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-num">∞</div>
-        <div class="hero-stat-label">Estatísticas</div>
-      </div>
+      <div class="hero-stat-item"><div class="hero-stat-num" id="stat-players-count">0</div><div class="hero-stat-label">Jogadores</div></div>
+      <div class="hero-stat-item"><div class="hero-stat-num">CS2</div><div class="hero-stat-label">Exclusivo</div></div>
+      <div class="hero-stat-item"><div class="hero-stat-num">∞</div><div class="hero-stat-label">Estatísticas</div></div>
     </div>
   </section>
 
-  <!-- SEARCH BAR -->
   <section style="background:var(--bg-secondary);border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);padding:2rem">
     <div style="max-width:700px;margin:0 auto;text-align:center">
-      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">
-        PESQUISAR QUALQUER JOGADOR
-      </p>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">PESQUISAR QUALQUER JOGADOR</p>
       <form id="home-search-form" style="display:flex;gap:.5rem">
         <div class="search-input-wrap" style="flex:1">
           <span class="search-icon">🔍</span>
@@ -95,72 +66,46 @@
         </div>
         <button type="submit" class="btn btn-primary">Buscar</button>
       </form>
-      <p style="font-size:.78rem;color:var(--text-dim);margin-top:.6rem">
-        Apenas jogadores que já fizeram login no site aparecem na pesquisa
-      </p>
+      <p style="font-size:.78rem;color:var(--text-dim);margin-top:.6rem">Apenas jogadores que já fizeram login no site aparecem na pesquisa</p>
     </div>
   </section>
 
-  <!-- TOP 5 PREVIEW -->
   <div class="section">
     <div class="section-header">
-      <div class="section-title">
-        <small>PLACAR GLOBAL</small>
-        Top <span class="accent">Jogadores</span>
-      </div>
+      <div class="section-title"><small>PLACAR GLOBAL</small>Top <span class="accent">Jogadores</span></div>
       <a href="/ranking.html" class="btn btn-outline btn-sm">Ver ranking completo →</a>
     </div>
     <div id="top5-container"></div>
   </div>
 
-  <!-- FEATURES -->
+  <!-- Banner Discord -->
   <div class="section" style="border-top:1px solid var(--border-subtle)">
-    <div class="section-title" style="text-align:center;margin-bottom:3rem">
-      <small>O QUE VOCÊ PODE FAZER</small>
-      Plataforma <span class="accent">Completa</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem" class="stagger">
-      <div class="card">
-        <div class="card-corner"></div>
-        <div style="font-size:2rem;margin-bottom:.8rem">🎖</div>
-        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Ranking Global</h3>
-        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
-          Compare-se com todos os jogadores por ELO, horas, K/D, nível Steam e valor de inventário.
-        </p>
+    <div style="background:linear-gradient(135deg,#5865F2 0%,#4752c4 100%);border-radius:12px;padding:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div style="display:flex;align-items:center;gap:1rem">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        <div>
+          <div style="font-size:1.3rem;font-weight:700;color:#fff">Junte-se ao Discord do CS2HUB</div>
+          <div style="font-size:.9rem;color:rgba(255,255,255,.8)">Encontre jogadores, anuncie itens e fique por dentro das novidades</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-corner"></div>
-        <div style="font-size:2rem;margin-bottom:.8rem">📊</div>
-        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Estatísticas Detalhadas</h3>
-        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
-          Kills, mortes, headshot %, arma favorita, partidas jogadas, MVPs e muito mais.
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-corner"></div>
-        <div style="font-size:2rem;margin-bottom:.8rem">💰</div>
-        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Inventário Valorizado</h3>
-        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
-          Veja todos os itens CS2 com preços do Steam Market em USD e R$, com valor total.
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-corner"></div>
-        <div style="font-size:2rem;margin-bottom:.8rem">🔍</div>
-        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Pesquisa de Jogadores</h3>
-        <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">
-          Pesquise qualquer jogador pelo nick e veja seu perfil completo com stats e inventário.
-        </p>
-      </div>
+      <a href="https://discord.gg/5v6NN5ptSe" target="_blank" rel="noopener" class="btn" style="background:#fff;color:#5865F2;font-weight:700;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none">Entrar no Discord</a>
     </div>
   </div>
 
+  <div class="section" style="border-top:1px solid var(--border-subtle)">
+    <div class="section-title" style="text-align:center;margin-bottom:3rem"><small>O QUE VOCÊ PODE FAZER</small>Plataforma <span class="accent">Completa</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem" class="stagger">
+      <div class="card"><div class="card-corner"></div><div style="font-size:2rem;margin-bottom:.8rem">🎖</div><h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Ranking Global</h3><p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">Compare-se com todos os jogadores por ELO, horas, K/D, nível Steam e valor de inventário.</p></div>
+      <div class="card"><div class="card-corner"></div><div style="font-size:2rem;margin-bottom:.8rem">📊</div><h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Estatísticas Detalhadas</h3><p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">Kills, mortes, headshot %, arma favorita, partidas jogadas, MVPs e muito mais.</p></div>
+      <div class="card"><div class="card-corner"></div><div style="font-size:2rem;margin-bottom:.8rem">💰</div><h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Inventário Valorizado</h3><p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">Veja todos os itens CS2 com preços do Steam Market em USD e R$, com valor total.</p></div>
+      <div class="card"><div class="card-corner"></div><div style="font-size:2rem;margin-bottom:.8rem">🏪</div><h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Marketplace</h3><p style="font-size:.9rem;color:var(--text-secondary);line-height:1.5">Compre e venda itens CS2 diretamente com outros jogadores da plataforma.</p></div>
+    </div>
+  </div>
 </main>
 
 <footer>
   <p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>. Dados via Steam Web API.</p>
 </footer>
-
 <script src="/js/auth.js"></script>
 <script src="/js/main.js"></script>
 </body>
