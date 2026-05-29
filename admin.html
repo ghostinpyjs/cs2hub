@@ -31,8 +31,7 @@
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
     <li><a href="/ranking.html">Ranking</a></li>
-    <li><a href="/marketplace.html">Marketplace</a></li>
-    <li><a href="/admin.html" class="active">Admin</a></li>
+    <li><a href="/jogador.html">Pesquisar</a></li>
   </ul>
   <div id="nav-login-area"></div>
 </nav>
@@ -46,8 +45,7 @@
       </div>
     </div>
 
-    <div id="admin-loading" class="loading-wrap"><div class="spinner"></div><span class="loading-text">Verificando acesso...</span></div>
-    <div id="admin-denied" class="hidden"><div class="alert alert-error">⛔ Acesso negado.</div></div>
+    <div id="admin-denied" class="hidden"><div class="alert alert-error">⛔ Acesso negado. Você não tem permissão para acessar esta página.</div></div>
 
     <div id="admin-content" class="hidden">
       <div class="admin-tabs">
@@ -56,14 +54,12 @@
         <button class="admin-tab" onclick="showTab('marketplace')">🏪 Anúncios</button>
       </div>
 
-      <!-- Stats -->
       <div id="tab-stats" class="admin-panel active">
         <div class="stat-row" id="admin-stats"></div>
       </div>
 
-      <!-- Players -->
       <div id="tab-players" class="admin-panel">
-        <div style="margin-bottom:1rem;display:flex;gap:.5rem">
+        <div style="margin-bottom:1rem">
           <input id="admin-search" type="text" placeholder="Filtrar por nick..." style="padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);width:280px">
         </div>
         <div class="table-wrap">
@@ -71,9 +67,9 @@
             <thead>
               <tr>
                 <th>Jogador</th>
-                <th>SteamID</th>
                 <th>Horas</th>
                 <th>K/D</th>
+                <th>Inventário</th>
                 <th>Último login</th>
                 <th>Status</th>
                 <th>Ações</th>
@@ -84,7 +80,6 @@
         </div>
       </div>
 
-      <!-- Marketplace -->
       <div id="tab-marketplace" class="admin-panel">
         <div class="table-wrap">
           <table class="admin-table">
