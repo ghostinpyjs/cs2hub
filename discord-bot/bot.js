@@ -388,8 +388,8 @@ function buildGrupoEmbed(grupo) {
 
 async function criarCanalGrupo(guild, leader, players, modo, grupoId) {
   try {
-    let cat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === "🎮|CS2 GRUPOS");
-    if (!cat) cat = await guild.channels.create({ name: "🎮|CS2 GRUPOS", type: ChannelType.GuildCategory });
+    let cat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === "🎮┃CS2 GRUPOS");
+    if (!cat) cat = await guild.channels.create({ name: "🎮┃CS2 GRUPOS", type: ChannelType.GuildCategory });
     const todos = [leader, ...players];
     const canal = await guild.channels.create({
       name: `🎯-${modo.toLowerCase().replace(/ /g, "-")}-${grupoId}`,
@@ -1277,12 +1277,12 @@ client.on("interactionCreate", async interaction => {
 
   // Encontrar ou criar categoria de calls
   let categoria = interaction.guild.channels.cache.find(
-    c => c.type === ChannelType.GuildCategory && c.name === "🔊|CALLS"
+    c => c.type === ChannelType.GuildCategory && c.name === "🔊┃CALLS"
   );
   if (!categoria) {
     try {
       categoria = await interaction.guild.channels.create({
-        name: "🔊|CALLS",
+        name: "🔊┃CALLS",
         type: ChannelType.GuildCategory,
       });
     } catch (e) {
