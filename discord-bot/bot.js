@@ -197,6 +197,7 @@ const grupos      = new Map(); // grupoId → grupo
 const eventos     = new Map(); // eventoId → evento
 const quizAtivo   = new Map(); // channelId → quiz
 const xpCD        = new Map(); // userId → timestamp
+const callsAtivas = new Map(); // channelId → { dono, timer, guildId }
 
 // ════════════════════════════════════════════════════════════════════
 // COMANDOS SLASH
@@ -305,6 +306,13 @@ const commands = [
   new SlashCommandBuilder()
     .setName("ping")
     .setDescription("🏓 Ver latência do bot"),
+
+  new SlashCommandBuilder()
+    .setName("call")
+    .setDescription("🔊 Criar uma call de voz temporária")
+    .addStringOption(o => o.setName("nome").setDescription("Nome da call (ex: Dust2 só os bom)").setRequired(false))
+    .addIntegerOption(o => o.setName("limite").setDescription("Limite de pessoas (0 = sem limite)").setRequired(false).setMinValue(0).setMaxValue(99))
+    .addBooleanOption(o => o.setName("privada").setDescription("Call privada? (só quem foi convidado entra)").setRequired(false)),
 
 ].map(c => c.toJSON());
 
@@ -1208,6 +1216,181 @@ function buildEventoEmbed(evento, desc = "", organizadorId = null) {
 
   return embed;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// SISTEMA DE CALLS TEMPORÁRIAS
+// ════════════════════════════════════════════════════════════════════
+client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
+  // Alguém SAIU de uma call gerenciada
+  if (oldState.channelId && callsAtivas.has(oldState.channelId)) {
+    const canal = oldState.channel;
+    if (!canal) return;
+
+    // Se ficou vazio, apagar em 10 segundos
+    if (canal.members.size === 0) {
+      const dados = callsAtivas.get(oldState.channelId);
+
+      // Cancela timer anterior se existir (alguém entrou e saiu rápido)
+      if (dados.timer) clearTimeout(dados.timer);
+
+      const timer = setTimeout(async () => {
+        // Confirma que ainda está vazio antes de deletar
+        const ch = oldState.guild.channels.cache.get(oldState.channelId);
+        if (ch && ch.members.size === 0) {
+          await ch.delete().catch(() => {});
+          callsAtivas.delete(oldState.channelId);
+          await log(oldState.guild, logEmbed(
+            "🔇 Call deletada",
+            `Call temporária **${ch.name}** foi deletada por inatividade`,
+            C.RED
+          ));
+        }
+      }, 10000);
+
+      dados.timer = timer;
+      callsAtivas.set(oldState.channelId, dados);
+    }
+  }
+
+  // Alguém ENTROU numa call gerenciada — cancela o timer de deleção
+  if (newState.channelId && callsAtivas.has(newState.channelId)) {
+    const dados = callsAtivas.get(newState.channelId);
+    if (dados.timer) {
+      clearTimeout(dados.timer);
+      dados.timer = null;
+      callsAtivas.set(newState.channelId, dados);
+    }
+  }
+});
+
+// Handler do /call dentro do interactionCreate existente — adicionado via patch
+const _origLogin = client.login.bind(client);
+
+// Interceptar o comando /call no interactionCreate já registrado
+client.on("interactionCreate", async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+  if (interaction.commandName !== "call") return;
+
+  const nome    = interaction.options.getString("nome")    || `🔊 Call de ${interaction.user.username}`;
+  const limite  = interaction.options.getInteger("limite") ?? 0;
+  const privada = interaction.options.getBoolean("privada") ?? false;
+
+  // Encontrar ou criar categoria de calls
+  let categoria = interaction.guild.channels.cache.find(
+    c => c.type === ChannelType.GuildCategory && c.name === "🔊 CALLS"
+  );
+  if (!categoria) {
+    try {
+      categoria = await interaction.guild.channels.create({
+        name: "🔊 CALLS",
+        type: ChannelType.GuildCategory,
+      });
+    } catch (e) {
+      return interaction.reply({ content: "❌ Sem permissão para criar canais.", ephemeral: true });
+    }
+  }
+
+  // Permissões base
+  const perms = [
+    { id: interaction.guild.roles.everyone.id, allow: privada ? [] : [PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel], deny: privada ? [PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel] : [] },
+    { id: interaction.user.id, allow: [PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.MoveMembers, PermissionFlagsBits.MuteMembers] },
+    { id: client.user.id, allow: [PermissionFlagsBits.Connect, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels] },
+  ];
+
+  let canal;
+  try {
+    canal = await interaction.guild.channels.create({
+      name: nome,
+      type: ChannelType.GuildVoice,
+      parent: categoria.id,
+      userLimit: limite,
+      permissionOverwrites: perms,
+    });
+  } catch (e) {
+    return interaction.reply({ content: "❌ Não consegui criar a call. Verifique as permissões do bot.", ephemeral: true });
+  }
+
+  // Registra a call
+  callsAtivas.set(canal.id, { dono: interaction.user.id, timer: null, guildId: interaction.guild.id });
+
+  // Embed de resposta
+  const embed = new EmbedBuilder()
+    .setTitle("🔊 Call criada!")
+    .setDescription(`Sua call está pronta! Clique em **Entrar na Call** ou acesse manualmente em **${nome}**.\n\n⚠️ *Se ficar vazia por 10 segundos, será deletada automaticamente.*`)
+    .setColor(C.TEAL)
+    .setThumbnail(interaction.user.displayAvatarURL({ size: 128 }))
+    .addFields(
+      { name: "📛 Nome",      value: `\`${nome}\``,                              inline: true },
+      { name: "👥 Limite",    value: limite === 0 ? "Sem limite" : `\`${limite} pessoas\``, inline: true },
+      { name: "🔒 Tipo",      value: privada ? "Privada 🔐" : "Pública 🌐",      inline: true },
+      { name: "👑 Dono",      value: `<@${interaction.user.id}>`,                inline: true },
+      { name: "⏱ Auto-delete", value: "10s sem ninguém",                        inline: true },
+    )
+    .setFooter({ text: "CS2HUB • Call temporária" })
+    .setTimestamp();
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel("🔊 Entrar na Call")
+      .setStyle(ButtonStyle.Link)
+      .setURL(`https://discord.com/channels/${interaction.guild.id}/${canal.id}`),
+    new ButtonBuilder()
+      .setCustomId(`fecharCall_${canal.id}`)
+      .setLabel("🗑️ Deletar call")
+      .setStyle(ButtonStyle.Danger),
+  );
+
+  await interaction.reply({ embeds: [embed], components: [row] });
+
+  await log(interaction.guild, logEmbed(
+    "🔊 Call criada",
+    `<@${interaction.user.id}> criou a call **${nome}**`,
+    C.TEAL,
+    [
+      { name: "👥 Limite",  value: limite === 0 ? "Sem limite" : `${limite}`, inline: true },
+      { name: "🔒 Privada", value: privada ? "Sim" : "Não",                   inline: true },
+    ]
+  ));
+});
+
+// Botão de fechar call manualmente
+client.on("interactionCreate", async interaction => {
+  if (!interaction.isButton()) return;
+  if (!interaction.customId.startsWith("fecharCall_")) return;
+
+  const channelId = interaction.customId.replace("fecharCall_", "");
+  const dados     = callsAtivas.get(channelId);
+
+  // Só o dono pode deletar pelo botão
+  if (dados && interaction.user.id !== dados.dono) {
+    return interaction.reply({ content: "❌ Só o dono da call pode deletá-la.", ephemeral: true });
+  }
+
+  const canal = interaction.guild.channels.cache.get(channelId);
+  if (canal) {
+    await canal.delete().catch(() => {});
+    callsAtivas.delete(channelId);
+    await log(interaction.guild, logEmbed(
+      "🗑️ Call deletada manualmente",
+      `<@${interaction.user.id}> deletou a call **${canal.name}**`,
+      C.RED
+    ));
+  }
+
+  // Editar mensagem original
+  try {
+    await interaction.update({
+      embeds: [new EmbedBuilder()
+        .setTitle("🗑️ Call encerrada")
+        .setDescription("A call foi deletada pelo dono.")
+        .setColor(C.RED)
+        .setTimestamp()],
+      components: [],
+    });
+  } catch (_) {
+    await interaction.reply({ content: "✅ Call deletada.", ephemeral: true }).catch(() => {});
+  }
+});
 
 // ════════════════════════════════════════════════════════════════════
 // LOGIN
