@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: cs2hub-discord-bot
+    runtime: node
+    rootDir: discord-bot
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: SITE_URL
+        value: https://cs2hubs.vercel.app
