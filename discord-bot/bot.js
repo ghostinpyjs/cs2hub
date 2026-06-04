@@ -1271,7 +1271,7 @@ client.on("interactionCreate", async interaction => {
   if (!interaction.isChatInputCommand()) return;
   if (interaction.commandName !== "call") return;
 
-  const nome    = interaction.options.getString("nome")    || `🔊 | Call de ${interaction.user.username}`;
+  const nome    = interaction.options.getString("nome")    || `🔊┃Call de ${interaction.user.username}`;
   const limite  = interaction.options.getInteger("limite") ?? 0;
   const privada = interaction.options.getBoolean("privada") ?? false;
 
