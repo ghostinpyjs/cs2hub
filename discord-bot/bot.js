@@ -133,8 +133,8 @@ async function getLogChannel(guild) {
   let ch = guild.channels.cache.find(c => c.name === LOG_CHANNEL_NAME && c.type === ChannelType.GuildText);
   if (!ch) {
     try {
-      let cat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === "📊 CS2HUB");
-      if (!cat) cat = await guild.channels.create({ name: "📊 CS2HUB", type: ChannelType.GuildCategory });
+      let cat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === "📊 ┃ CS2HUB");
+      if (!cat) cat = await guild.channels.create({ name: "📊 ┃ CS2HUB", type: ChannelType.GuildCategory });
       ch = await guild.channels.create({
         name: LOG_CHANNEL_NAME,
         type: ChannelType.GuildText,
@@ -388,8 +388,8 @@ function buildGrupoEmbed(grupo) {
 
 async function criarCanalGrupo(guild, leader, players, modo, grupoId) {
   try {
-    let cat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === "🎮 CS2 GRUPOS");
-    if (!cat) cat = await guild.channels.create({ name: "🎮 CS2 GRUPOS", type: ChannelType.GuildCategory });
+    let cat = guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === "🎮 | CS2 GRUPOS");
+    if (!cat) cat = await guild.channels.create({ name: "🎮 | CS2 GRUPOS", type: ChannelType.GuildCategory });
     const todos = [leader, ...players];
     const canal = await guild.channels.create({
       name: `🎯-${modo.toLowerCase().replace(/ /g, "-")}-${grupoId}`,
@@ -1271,13 +1271,13 @@ client.on("interactionCreate", async interaction => {
   if (!interaction.isChatInputCommand()) return;
   if (interaction.commandName !== "call") return;
 
-  const nome    = interaction.options.getString("nome")    || `🔊 Call de ${interaction.user.username}`;
+  const nome    = interaction.options.getString("nome")    || `🔊 | Call de ${interaction.user.username}`;
   const limite  = interaction.options.getInteger("limite") ?? 0;
   const privada = interaction.options.getBoolean("privada") ?? false;
 
   // Encontrar ou criar categoria de calls
   let categoria = interaction.guild.channels.cache.find(
-    c => c.type === ChannelType.GuildCategory && c.name === "🔊 CALLS"
+    c => c.type === ChannelType.GuildCategory && c.name === "🔊 | CALLS"
   );
   if (!categoria) {
     try {
