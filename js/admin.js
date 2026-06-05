@@ -2,8 +2,33 @@ const ADMIN_ID = "76561199851942884";
 let allPlayers  = [];
 let allListings = [];
 
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showTab(name) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name)?.classList.add('active');
+  document.querySelectorAll('.admin-tab').forEach(t => {
+    if (t.getAttribute('onclick') === `showTab('${name}')`) t.classList.add('active');
+  });
+}
+
 async function initAdmin() {
-  const user = AUTH.getUser();
+  // Aguarda o auth.js estar pronto (até 3s)
+  let attempts = 0;
+  while (typeof AUTH === 'undefined' && attempts < 30) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+
+  const user = typeof AUTH !== 'undefined' ? AUTH.getUser() : null;
   const id   = user?.steam_id || user?.steamid;
 
   document.getElementById('admin-loading')?.classList.add('hidden');
@@ -36,7 +61,7 @@ async function loadStats() {
     const totalVal = players.reduce((s, p) => s + (p.inventory_value || 0), 0);
     const banned   = players.filter(p => p.banned).length;
     const avgHours = players.length ? Math.round(players.reduce((s,p) => s + (p.hours||0), 0) / players.length) : 0;
-    const topKD    = players.sort((a,b) => parseFloat(b.kd||0) - parseFloat(a.kd||0))[0];
+    const topKD    = [...players].sort((a,b) => parseFloat(b.kd||0) - parseFloat(a.kd||0))[0];
 
     document.getElementById('admin-stats').innerHTML = `
       <div class="stat-box"><div class="stat-box-num">${players.length}</div><div class="stat-box-label">Jogadores</div></div>
@@ -109,7 +134,7 @@ function renderListings(listings) {
   const tbody = document.getElementById('admin-market-tbody');
   if (!tbody) return;
   if (!listings.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-dim);padding:2rem">Nenhum anúncio.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-dim);padding:2rem">Nenhum anúncio.</td></tr>';
     return;
   }
   tbody.innerHTML = listings.map(l => `
@@ -121,7 +146,57 @@ function renderListings(listings) {
         </div>
       </td>
       <td style="font-size:.8rem">${escHtml(l.nick || l.steam_id)}</td>
+      <td style="font-size:.8rem;color:#5865F2">${l.discord_tag ? escHtml(l.discord_tag) : '<span style="color:var(--text-dim)">—</span>'}</td>
       <td><span style="color:var(--orange);font-weight:700">$${parseFloat(l.price_usd||0).toFixed(2)}</span></td>
       <td><span class="${l.status==='active'?'badge-active':'badge-banned'}">${l.status==='active'?'✓ Ativo':'✕ Removido'}</span></td>
       <td style="font-size:.8rem;color:var(--text-dim)">${l.created_at ? new Date(l.created_at).toLocaleDateString('pt-BR') : '—'}</td>
-      <td>${l.status==='activ
+      <td>
+        ${l.status === 'active' ? `<button class="btn-danger" onclick="removeListingAdmin('${l.id}')">Remover</button>` : '—'}
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function toggleBan(steamId, ban) {
+  if (!confirm(`${ban ? 'Banir' : 'Desbanir'} este jogador?`)) return;
+  try {
+    const res = await fetch('/api/admin-ban', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ steam_id: steamId, banned: ban, admin_id: ADMIN_ID }),
+    });
+    if (!res.ok) throw new Error('Falha');
+    await loadPlayers();
+    await loadStats();
+  } catch (e) { alert('Erro ao atualizar: ' + e.message); }
+}
+
+async function deletePlayer(steamId) {
+  if (!confirm('Deletar permanentemente este jogador?')) return;
+  try {
+    const res = await fetch('/api/admin-delete-player', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ steam_id: steamId, admin_id: ADMIN_ID }),
+    });
+    if (!res.ok) throw new Error('Falha');
+    await loadPlayers();
+    await loadStats();
+  } catch (e) { alert('Erro ao deletar: ' + e.message); }
+}
+
+async function removeListingAdmin(listingId) {
+  if (!confirm('Remover este anúncio?')) return;
+  try {
+    const res = await fetch('/api/market-remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ listing_id: listingId, admin_id: ADMIN_ID }),
+    });
+    if (!res.ok) throw new Error('Falha');
+    await loadListings();
+    await loadStats();
+  } catch (e) { alert('Erro ao remover: ' + e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', initAdmin);
