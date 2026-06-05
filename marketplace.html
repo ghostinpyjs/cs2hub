@@ -16,7 +16,10 @@
   .market-seller{font-size:.75rem;color:var(--text-dim);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
   .market-seller img{width:16px;height:16px;border-radius:2px}
   .market-price{font-size:1.1rem;font-weight:700;color:var(--orange)}
-  .market-price-brl{font-size:.75rem;color:var(--text-dim)}
+  .market-price-brl{font-size:.75rem;color:var(--text-dim);margin-bottom:.6rem}
+  .btn-discord{display:flex;align-items:center;justify-content:center;gap:.4rem;background:#5865F2;color:#fff;border:none;border-radius:5px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:pointer;width:100%;text-decoration:none;transition:background .2s}
+  .btn-discord:hover{background:#4752c4}
+  .btn-discord svg{width:14px;height:14px;fill:#fff;flex-shrink:0}
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center}
   .modal-overlay.open{display:flex}
   .modal{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:2rem;width:90%;max-width:480px;position:relative}
@@ -27,6 +30,7 @@
   .form-group textarea{height:80px;resize:vertical}
   .filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
   .filter-bar input{padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);flex:1;min-width:200px}
+  .discord-hint{font-size:.75rem;color:var(--text-dim);margin-top:.3rem}
 </style>
 </head>
 <body>
@@ -61,6 +65,7 @@
   </div>
 </main>
 
+<!-- Modal Anunciar -->
 <div class="modal-overlay" id="modal-anunciar">
   <div class="modal">
     <button class="modal-close" onclick="fecharModal()">✕</button>
@@ -74,11 +79,34 @@
       <input type="number" id="input-price" placeholder="Ex: 5.99" step="0.01" min="0">
     </div>
     <div class="form-group">
+      <label>Discord para contato <span style="color:var(--text-dim);font-weight:400">(obrigatório)</span></label>
+      <input type="text" id="input-discord" placeholder="Ex: seuusuario ou seuusuario#1234">
+      <p class="discord-hint">Compradores entrarão em contato pelo seu Discord.</p>
+    </div>
+    <div class="form-group">
       <label>Descrição (opcional)</label>
       <textarea id="input-desc" placeholder="Descreva o item, condições de venda..."></textarea>
     </div>
     <div id="modal-error" class="hidden" style="color:var(--red);font-size:.85rem;margin-bottom:1rem"></div>
     <button class="btn btn-primary" onclick="publicarAnuncio()" style="width:100%">Publicar Anúncio</button>
+  </div>
+</div>
+
+<!-- Modal Contato Discord -->
+<div class="modal-overlay" id="modal-discord">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <button class="modal-close" onclick="fecharModalDiscord()">✕</button>
+    <div style="font-size:2rem;margin-bottom:.5rem">
+      <svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:#5865F2;margin:0 auto;display:block"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+    </div>
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:.5rem">Contatar Vendedor</h3>
+    <p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1rem">Copie o usuário do Discord abaixo e envie uma mensagem direta.</p>
+    <div id="discord-tag-display" style="background:var(--bg-secondary);border:1px solid #5865F2;border-radius:8px;padding:.8rem 1.2rem;font-family:monospace;font-size:1.1rem;color:#fff;margin-bottom:1rem;word-break:break-all"></div>
+    <button class="btn-discord" onclick="copiarDiscord()" style="font-size:.9rem;padding:.6rem 1rem;border-radius:7px">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
+      Copiar usuário
+    </button>
+    <p id="discord-copy-ok" style="color:var(--green);font-size:.8rem;margin-top:.6rem;display:none">✓ Copiado!</p>
   </div>
 </div>
 
