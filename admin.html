@@ -17,7 +17,7 @@
   .admin-table{width:100%;border-collapse:collapse}
   .admin-table th{text-align:left;padding:.6rem 1rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);border-bottom:1px solid var(--border-subtle)}
   .admin-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border-subtle);font-size:.9rem;vertical-align:middle}
-  .admin-table tr:hover td{background:var(--bg-card)}
+  .admin-table tr:hover td{background:rgba(255,255,255,.02)}
   .badge-active{color:var(--green);font-size:.75rem;font-weight:700}
   .badge-banned{color:var(--red);font-size:.75rem;font-weight:700}
   .btn-danger{background:#c0392b;color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:.8rem}
@@ -36,20 +36,25 @@
   <div id="nav-login-area"></div>
 </nav>
 
-<main id="admin-page" style="position:relative;z-index:1">
+<main style="position:relative;z-index:1">
   <div class="section">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem">
-      <div>
-        <p style="font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:.2em;color:var(--orange);text-transform:uppercase">// Acesso Restrito</p>
-        <h1 class="section-title" style="font-size:2rem">Painel <span class="accent">Admin</span></h1>
-      </div>
+    <div style="margin-bottom:2rem">
+      <p style="font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:.2em;color:var(--orange);text-transform:uppercase">// Acesso Restrito</p>
+      <h1 class="section-title" style="font-size:2rem">Painel <span class="accent">Admin</span></h1>
     </div>
 
-    <!-- loading spinner enquanto auth.js carrega -->
-    <div id="admin-loading" class="loading-wrap"><div class="spinner"></div><span class="loading-text">Verificando permissões...</span></div>
+    <!-- spinner — some logo que initAdmin() roda -->
+    <div id="admin-loading" class="loading-wrap">
+      <div class="spinner"></div>
+      <span class="loading-text">Verificando permissões...</span>
+    </div>
 
-    <div id="admin-denied" class="hidden"><div class="alert alert-error">⛔ Acesso negado. Você não tem permissão para acessar esta página.</div></div>
+    <!-- acesso negado -->
+    <div id="admin-denied" class="hidden">
+      <div class="alert alert-error">⛔ Acesso negado. Você não tem permissão para acessar esta página.</div>
+    </div>
 
+    <!-- conteúdo real -->
     <div id="admin-content" class="hidden">
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="showTab('stats')">📊 Estatísticas</button>
@@ -63,19 +68,15 @@
 
       <div id="tab-players" class="admin-panel">
         <div style="margin-bottom:1rem">
-          <input id="admin-search" type="text" placeholder="Filtrar por nick..." style="padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);width:280px">
+          <input id="admin-search" type="text" placeholder="Filtrar por nick..."
+            style="padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);width:280px">
         </div>
         <div class="table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Jogador</th>
-                <th>Horas</th>
-                <th>K/D</th>
-                <th>Inventário</th>
-                <th>Último login</th>
-                <th>Status</th>
-                <th>Ações</th>
+                <th>Jogador</th><th>Horas</th><th>K/D</th><th>Inventário</th>
+                <th>Último login</th><th>Status</th><th>Ações</th>
               </tr>
             </thead>
             <tbody id="admin-players-tbody"></tbody>
@@ -88,13 +89,8 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Item</th>
-                <th>Vendedor</th>
-                <th>Discord</th>
-                <th>Preço</th>
-                <th>Status</th>
-                <th>Data</th>
-                <th>Ações</th>
+                <th>Item</th><th>Vendedor</th><th>Discord</th><th>Preço</th>
+                <th>Status</th><th>Data</th><th>Ações</th>
               </tr>
             </thead>
             <tbody id="admin-market-tbody"></tbody>
@@ -102,10 +98,13 @@
         </div>
       </div>
     </div>
+
   </div>
 </main>
 
 <footer><p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>.</p></footer>
+
+<!-- auth.js DEVE vir antes de admin.js para que ADMIN_ID e AUTH existam -->
 <script src="/js/auth.js"></script>
 <script src="/js/main.js"></script>
 <script src="/js/admin.js"></script>
