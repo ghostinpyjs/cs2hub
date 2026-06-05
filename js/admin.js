@@ -1,4 +1,5 @@
-const ADMIN_ID = "76561199851942884";
+// admin.js
+// ADMIN_ID já declarado em auth.js — não redeclarar aqui
 let allPlayers  = [];
 let allListings = [];
 
@@ -21,14 +22,8 @@ function showTab(name) {
 }
 
 async function initAdmin() {
-  // Aguarda o auth.js estar pronto (até 3s)
-  let attempts = 0;
-  while (typeof AUTH === 'undefined' && attempts < 30) {
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-
-  const user = typeof AUTH !== 'undefined' ? AUTH.getUser() : null;
+  // auth.js já rodou handleCallback() e renderNav() antes deste ponto
+  const user = AUTH.getUser();
   const id   = user?.steam_id || user?.steamid;
 
   document.getElementById('admin-loading')?.classList.add('hidden');
@@ -60,8 +55,12 @@ async function loadStats() {
     const active   = listings.filter(l => l.status === 'active').length;
     const totalVal = players.reduce((s, p) => s + (p.inventory_value || 0), 0);
     const banned   = players.filter(p => p.banned).length;
-    const avgHours = players.length ? Math.round(players.reduce((s,p) => s + (p.hours||0), 0) / players.length) : 0;
-    const topKD    = [...players].sort((a,b) => parseFloat(b.kd||0) - parseFloat(a.kd||0))[0];
+    const avgHours = players.length
+      ? Math.round(players.reduce((s, p) => s + (p.hours || 0), 0) / players.length)
+      : 0;
+    const topKD = [...players].sort((a, b) =>
+      parseFloat(b.kd || 0) - parseFloat(a.kd || 0)
+    )[0];
 
     document.getElementById('admin-stats').innerHTML = `
       <div class="stat-box"><div class="stat-box-num">${players.length}</div><div class="stat-box-label">Jogadores</div></div>
@@ -72,7 +71,7 @@ async function loadStats() {
       <div class="stat-box"><div class="stat-box-num">${avgHours}h</div><div class="stat-box-label">Média de Horas</div></div>
       ${topKD ? `<div class="stat-box"><div class="stat-box-num" style="font-size:1rem">${escHtml(topKD.nick)}</div><div class="stat-box-label">Melhor K/D (${topKD.kd})</div></div>` : ''}
     `;
-  } catch (e) { console.error(e); }
+  } catch (e) { console.error('loadStats:', e); }
 }
 
 async function loadPlayers() {
@@ -81,7 +80,7 @@ async function loadPlayers() {
     const data = await res.json();
     allPlayers = data.players || [];
     renderPlayers(allPlayers);
-  } catch (e) { console.error(e); }
+  } catch (e) { console.error('loadPlayers:', e); }
 }
 
 function renderPlayers(players) {
@@ -95,7 +94,7 @@ function renderPlayers(players) {
     <tr style="${p.banned ? 'opacity:.5' : ''}">
       <td>
         <div style="display:flex;align-items:center;gap:.6rem">
-          <img src="${p.avatar||''}" style="width:32px;height:32px;border-radius:4px;flex-shrink:0"
+          <img src="${p.avatar || ''}" style="width:32px;height:32px;border-radius:4px;flex-shrink:0"
                onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'">
           <div>
             <a href="/jogador.html?id=${p.steam_id}" style="color:var(--text-primary);font-weight:600">${escHtml(p.nick)}</a>
@@ -105,7 +104,7 @@ function renderPlayers(players) {
       </td>
       <td>${p.hours || 0}h</td>
       <td style="color:${parseFloat(p.kd||0)>=1.2?'var(--green)':parseFloat(p.kd||0)<=0.85?'var(--red)':'var(--text-primary)'}">${p.kd || '—'}</td>
-      <td>$${(p.inventory_value||0).toFixed(2)}</td>
+      <td>$${(p.inventory_value || 0).toFixed(2)}</td>
       <td style="font-size:.8rem;color:var(--text-dim)">${p.last_login ? new Date(p.last_login).toLocaleDateString('pt-BR') : '—'}</td>
       <td><span class="${p.banned ? 'badge-banned' : 'badge-active'}">${p.banned ? '⛔ BANIDO' : '✓ ATIVO'}</span></td>
       <td style="display:flex;gap:.4rem;flex-wrap:wrap">
@@ -127,7 +126,7 @@ async function loadListings() {
     const data = await res.json();
     allListings = data.listings || [];
     renderListings(allListings);
-  } catch (e) { console.error(e); }
+  } catch (e) { console.error('loadListings:', e); }
 }
 
 function renderListings(listings) {
@@ -141,18 +140,21 @@ function renderListings(listings) {
     <tr>
       <td>
         <div style="display:flex;align-items:center;gap:.6rem">
-          ${l.item_icon ? `<img src="https://community.cloudflare.steamstatic.com/economy/image/${l.item_icon}/60fx45f" style="height:36px">` : '🔫'}
+          ${l.item_icon
+            ? `<img src="https://community.cloudflare.steamstatic.com/economy/image/${l.item_icon}/60fx45f" style="height:36px">`
+            : '🔫'}
           <span style="font-size:.85rem">${escHtml(l.item_name)}</span>
         </div>
       </td>
       <td style="font-size:.8rem">${escHtml(l.nick || l.steam_id)}</td>
       <td style="font-size:.8rem;color:#5865F2">${l.discord_tag ? escHtml(l.discord_tag) : '<span style="color:var(--text-dim)">—</span>'}</td>
-      <td><span style="color:var(--orange);font-weight:700">$${parseFloat(l.price_usd||0).toFixed(2)}</span></td>
-      <td><span class="${l.status==='active'?'badge-active':'badge-banned'}">${l.status==='active'?'✓ Ativo':'✕ Removido'}</span></td>
+      <td><span style="color:var(--orange);font-weight:700">$${parseFloat(l.price_usd || 0).toFixed(2)}</span></td>
+      <td><span class="${l.status === 'active' ? 'badge-active' : 'badge-banned'}">${l.status === 'active' ? '✓ Ativo' : '✕ Removido'}</span></td>
       <td style="font-size:.8rem;color:var(--text-dim)">${l.created_at ? new Date(l.created_at).toLocaleDateString('pt-BR') : '—'}</td>
-      <td>
-        ${l.status === 'active' ? `<button class="btn-danger" onclick="removeListingAdmin('${l.id}')">Remover</button>` : '—'}
-      </td>
+      <td>${l.status === 'active'
+        ? `<button class="btn-danger" onclick="removeListingAdmin('${l.id}')">Remover</button>`
+        : '—'
+      }</td>
     </tr>
   `).join('');
 }
@@ -168,7 +170,7 @@ async function toggleBan(steamId, ban) {
     if (!res.ok) throw new Error('Falha');
     await loadPlayers();
     await loadStats();
-  } catch (e) { alert('Erro ao atualizar: ' + e.message); }
+  } catch (e) { alert('Erro: ' + e.message); }
 }
 
 async function deletePlayer(steamId) {
@@ -182,7 +184,7 @@ async function deletePlayer(steamId) {
     if (!res.ok) throw new Error('Falha');
     await loadPlayers();
     await loadStats();
-  } catch (e) { alert('Erro ao deletar: ' + e.message); }
+  } catch (e) { alert('Erro: ' + e.message); }
 }
 
 async function removeListingAdmin(listingId) {
@@ -196,7 +198,9 @@ async function removeListingAdmin(listingId) {
     if (!res.ok) throw new Error('Falha');
     await loadListings();
     await loadStats();
-  } catch (e) { alert('Erro ao remover: ' + e.message); }
+  } catch (e) { alert('Erro: ' + e.message); }
 }
 
+// auth.js já registra DOMContentLoaded antes deste script.
+// Usar DOMContentLoaded aqui também é seguro — se já disparou, o callback roda imediatamente.
 document.addEventListener('DOMContentLoaded', initAdmin);
