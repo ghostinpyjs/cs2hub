@@ -6,23 +6,100 @@
 <title>Admin — CS2HUB</title>
 <link rel="stylesheet" href="/css/style.css">
 <style>
-  .admin-tabs{display:flex;gap:.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border-subtle);padding-bottom:1rem}
-  .admin-tab{padding:.5rem 1.2rem;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--border-subtle);background:transparent;color:var(--text-secondary)}
-  .admin-tab.active{background:var(--orange);color:#000;border-color:var(--orange)}
-  .admin-panel{display:none}.admin-panel.active{display:block}
-  .stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
-  .stat-box{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1.2rem;text-align:center}
-  .stat-box-num{font-size:2rem;font-weight:700;color:var(--orange)}
-  .stat-box-label{font-size:.78rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
-  .admin-table{width:100%;border-collapse:collapse}
-  .admin-table th{text-align:left;padding:.6rem 1rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);border-bottom:1px solid var(--border-subtle)}
-  .admin-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border-subtle);font-size:.9rem;vertical-align:middle}
-  .admin-table tr:hover td{background:rgba(255,255,255,.02)}
-  .badge-active{color:var(--green);font-size:.75rem;font-weight:700}
-  .badge-banned{color:var(--red);font-size:.75rem;font-weight:700}
-  .btn-danger{background:#c0392b;color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:.8rem}
-  .btn-success{background:#27ae60;color:#fff;border:none;padding:.3rem .8rem;border-radius:4px;cursor:pointer;font-size:.8rem}
-  .btn-danger:hover{background:#a93226}
+.aw{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+.adm-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.adm-hdr-tag{font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:.2em;color:var(--orange);text-transform:uppercase;margin-bottom:.3rem}
+.adm-hdr-pills{display:flex;gap:.7rem;flex-wrap:wrap}
+.adm-pill{display:flex;align-items:center;gap:.55rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:7px;padding:.5rem .9rem;font-size:.8rem;color:var(--text-secondary)}
+.adm-pill-dot{width:7px;height:7px;border-radius:50%;background:#00b894;box-shadow:0 0 6px #00b894;animation:pulse-d 2s infinite;flex-shrink:0}
+@keyframes pulse-d{0%,100%{opacity:1}50%{opacity:.35}}
+.adm-tabs{display:flex;gap:.4rem;margin-bottom:2rem;border-bottom:1px solid var(--border-subtle);padding-bottom:1rem;flex-wrap:wrap}
+.adm-tab{padding:.5rem 1.1rem;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.93rem;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--border-subtle);background:transparent;color:var(--text-secondary);transition:all .15s}
+.adm-tab:hover,.adm-tab.active{background:var(--orange);color:#000;border-color:var(--orange)}
+.adm-panel{display:none}.adm-panel.active{display:block}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-box{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;padding:1.3rem;text-align:center;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.stat-box:hover{border-color:var(--orange);transform:translateY(-2px)}
+.stat-box::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--orange);opacity:0;transition:opacity .2s}
+.stat-box:hover::after{opacity:1}
+.stat-num{font-size:1.9rem;font-weight:700;color:var(--orange);font-family:'Barlow Condensed',sans-serif;line-height:1}
+.stat-lbl{font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;margin-top:.4rem}
+.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2rem}
+@media(max-width:700px){.act-grid{grid-template-columns:1fr}}
+.act-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;padding:1.1rem}
+.act-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:.08em;color:var(--orange);margin-bottom:.9rem}
+.act-item{display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--border-subtle)}
+.act-item:last-child{border-bottom:none}
+.act-item img{width:30px;height:30px;border-radius:4px;object-fit:cover;flex-shrink:0}
+.act-item-info{flex:1;min-width:0}
+.act-item-name{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-item-sub{font-size:.72rem;color:var(--text-dim)}
+.act-item-val{font-size:.82rem;font-weight:600;color:var(--orange);flex-shrink:0;white-space:nowrap}
+.chart-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+@media(max-width:900px){.chart-row{grid-template-columns:1fr}}
+.chart-card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:10px;padding:1.1rem}
+.chart-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-bottom:.9rem}
+.bar-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.55rem}
+.bar-label{font-size:.78rem;width:76px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-bg{flex:1;height:7px;background:var(--border-subtle);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--orange);transition:width .9s ease}
+.bar-val{font-size:.74rem;color:var(--text-dim);width:52px;text-align:right;flex-shrink:0}
+.flt-bar{display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center}
+.flt-bar input,.flt-bar select{padding:.48rem .9rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);font-size:.86rem;transition:border-color .2s}
+.flt-bar input{flex:1;min-width:200px}
+.flt-bar input:focus,.flt-bar select:focus{outline:none;border-color:var(--orange)}
+.flt-count{font-size:.8rem;color:var(--text-dim);align-self:center;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border-subtle)}
+.adm-table{width:100%;border-collapse:collapse}
+.adm-table th{text-align:left;padding:.65rem 1rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);border-bottom:1px solid var(--border-subtle);background:var(--bg-card);white-space:nowrap}
+.adm-table td{padding:.72rem 1rem;border-bottom:1px solid var(--border-subtle);font-size:.86rem;vertical-align:middle}
+.adm-table tr:last-child td{border-bottom:none}
+.adm-table tbody tr:hover td{background:rgba(240,130,15,.03)}
+.badge-ok{color:#00b894;font-size:.72rem;font-weight:700;background:rgba(0,184,148,.1);padding:.18rem .55rem;border-radius:20px;white-space:nowrap}
+.badge-ban{color:#e74c3c;font-size:.72rem;font-weight:700;background:rgba(231,76,60,.1);padding:.18rem .55rem;border-radius:20px;white-space:nowrap}
+.btn-sm{padding:.28rem .7rem;border-radius:5px;cursor:pointer;font-size:.78rem;font-weight:600;border:1px solid transparent;transition:all .15s;white-space:nowrap}
+.btn-red{background:rgba(231,76,60,.1);color:#e74c3c;border-color:rgba(231,76,60,.25)}
+.btn-red:hover{background:#e74c3c;color:#fff}
+.btn-green{background:rgba(0,184,148,.1);color:#00b894;border-color:rgba(0,184,148,.25)}
+.btn-green:hover{background:#00b894;color:#fff}
+.btn-blue{background:rgba(52,152,219,.1);color:#3498db;border-color:rgba(52,152,219,.25)}
+.btn-blue:hover{background:#3498db;color:#fff}
+.btn-row{display:flex;gap:.3rem;flex-wrap:wrap}
+.pagination{display:flex;gap:.35rem;margin-top:.9rem;justify-content:flex-end;flex-wrap:wrap}
+.pg-btn{padding:.28rem .68rem;border-radius:5px;cursor:pointer;font-size:.8rem;border:1px solid var(--border-subtle);background:transparent;color:var(--text-secondary);transition:all .15s}
+.pg-btn:hover,.pg-btn.active{background:var(--orange);color:#000;border-color:var(--orange)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.8rem;width:100%;max-width:430px;position:relative}
+.modal-box h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.35rem;margin-bottom:1rem}
+.modal-close-x{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;line-height:1;transition:color .15s}
+.modal-close-x:hover{color:var(--text-primary)}
+.fg{margin-bottom:.9rem}
+.fg label{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-bottom:.35rem}
+.fg textarea,.fg input{width:100%;padding:.6rem .85rem;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);font-size:.88rem;box-sizing:border-box;transition:border-color .2s}
+.fg textarea:focus,.fg input:focus{outline:none;border-color:var(--orange)}
+.fg textarea{height:75px;resize:vertical}
+.modal-player-preview{display:flex;align-items:center;gap:.8rem;background:var(--bg-secondary);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem}
+.modal-player-preview img{width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.modal-item-preview{display:flex;align-items:center;gap:.8rem;background:var(--bg-secondary);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem}
+.modal-item-preview img{height:44px;object-fit:contain;flex-shrink:0}
+.modal-item-price{color:var(--orange);font-weight:700;font-size:1rem;margin-top:.15rem}
+.modal-actions{display:flex;gap:.7rem;margin-top:.2rem}
+.modal-actions button{flex:1;padding:.7rem;border-radius:7px;cursor:pointer;font-size:.88rem;font-weight:600;font-family:inherit;border:none;transition:all .2s}
+.modal-btn-confirm{background:#e74c3c;color:#fff}
+.modal-btn-confirm:hover{background:#c0392b}
+.modal-btn-cancel{background:transparent;border:1px solid var(--border-subtle);color:var(--text-secondary)}
+.modal-btn-cancel:hover{background:var(--bg-secondary);color:var(--text-primary)}
+.log-item{display:flex;align-items:flex-start;gap:.7rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;padding:.65rem .9rem;font-size:.83rem}
+.log-icon{font-size:.95rem;flex-shrink:0;margin-top:.05rem}
+.log-msg{flex:1;line-height:1.5}
+.log-ts{font-size:.72rem;color:var(--text-dim);white-space:nowrap;flex-shrink:0}
+#logs-container{display:flex;flex-direction:column;gap:.4rem;max-height:560px;overflow-y:auto}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120%);background:#1a1a2e;border:1px solid var(--border-subtle);border-radius:8px;padding:.75rem 1.4rem;font-size:.88rem;color:var(--text-primary);z-index:9999;transition:transform .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(0,184,148,.4);color:#00b894}
+.toast.err{border-color:rgba(231,76,60,.4);color:#e74c3c}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
@@ -31,82 +108,538 @@
   <ul class="nav-links">
     <li><a href="/">Home</a></li>
     <li><a href="/ranking.html">Ranking</a></li>
-    <li><a href="/jogador.html">Pesquisar</a></li>
+    <li><a href="/marketplace.html">Marketplace</a></li>
   </ul>
   <div id="nav-login-area"></div>
 </nav>
 
 <main style="position:relative;z-index:1">
-  <div class="section">
-    <div style="margin-bottom:2rem">
-      <p style="font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:.2em;color:var(--orange);text-transform:uppercase">// Acesso Restrito</p>
-      <h1 class="section-title" style="font-size:2rem">Painel <span class="accent">Admin</span></h1>
+<div class="aw">
+  <div class="adm-hdr">
+    <div>
+      <div class="adm-hdr-tag">// Acesso Restrito</div>
+      <h1 class="section-title" style="font-size:2rem;margin:0">Painel <span class="accent">Admin</span></h1>
     </div>
-
-    <!-- spinner — some logo que initAdmin() roda -->
-    <div id="admin-loading" class="loading-wrap">
-      <div class="spinner"></div>
-      <span class="loading-text">Verificando permissões...</span>
-    </div>
-
-    <!-- acesso negado -->
-    <div id="admin-denied" class="hidden">
-      <div class="alert alert-error">⛔ Acesso negado. Você não tem permissão para acessar esta página.</div>
-    </div>
-
-    <!-- conteúdo real -->
-    <div id="admin-content" class="hidden">
-      <div class="admin-tabs">
-        <button class="admin-tab active" onclick="showTab('stats')">📊 Estatísticas</button>
-        <button class="admin-tab" onclick="showTab('players')">👥 Jogadores</button>
-        <button class="admin-tab" onclick="showTab('marketplace')">🏪 Anúncios</button>
-      </div>
-
-      <div id="tab-stats" class="admin-panel active">
-        <div class="stat-row" id="admin-stats"></div>
-      </div>
-
-      <div id="tab-players" class="admin-panel">
-        <div style="margin-bottom:1rem">
-          <input id="admin-search" type="text" placeholder="Filtrar por nick..."
-            style="padding:.5rem 1rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-primary);width:280px">
-        </div>
-        <div class="table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Jogador</th><th>Horas</th><th>K/D</th><th>Inventário</th>
-                <th>Último login</th><th>Status</th><th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="admin-players-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="tab-marketplace" class="admin-panel">
-        <div class="table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Item</th><th>Vendedor</th><th>Discord</th><th>Preço</th>
-                <th>Status</th><th>Data</th><th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="admin-market-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
+    <div class="adm-hdr-pills" id="adm-pills"></div>
   </div>
+
+  <div id="adm-denied" class="hidden"><div class="alert alert-error">⛔ Acesso negado.</div></div>
+
+  <div id="adm-loading" style="text-align:center;padding:4rem">
+    <div class="spinner"></div>
+    <p style="color:var(--text-dim);margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:.8rem;letter-spacing:.1em">VERIFICANDO PERMISSÕES...</p>
+  </div>
+
+  <div id="adm-content" class="hidden">
+    <div class="adm-tabs">
+      <button class="adm-tab active" onclick="showTab(this,'overview')">📊 Visão Geral</button>
+      <button class="adm-tab" onclick="showTab(this,'players')">👥 Jogadores</button>
+      <button class="adm-tab" onclick="showTab(this,'market')">🏪 Anúncios</button>
+      <button class="adm-tab" onclick="showTab(this,'logs')">📋 Logs</button>
+    </div>
+
+    <div id="tab-overview" class="adm-panel active">
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="s-players">—</div><div class="stat-lbl">Jogadores</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-banned" style="color:#e74c3c">—</div><div class="stat-lbl">Banidos</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-listings">—</div><div class="stat-lbl">Anúncios</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-active" style="color:#00b894">—</div><div class="stat-lbl">Ativos</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-inv">—</div><div class="stat-lbl">Val. Inventários</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-avgh">—</div><div class="stat-lbl">Média Horas</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-avgkd">—</div><div class="stat-lbl">Média K/D</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-toprat" style="font-size:1.1rem">—</div><div class="stat-lbl">Maior Rating</div></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card"><div class="chart-title">🏆 Top K/D</div><div id="chart-kd"></div></div>
+        <div class="chart-card"><div class="chart-title">⏱ Top Horas</div><div id="chart-hrs"></div></div>
+        <div class="chart-card"><div class="chart-title">💰 Top Inventário</div><div id="chart-inv"></div></div>
+      </div>
+      <div class="act-grid">
+        <div class="act-card"><div class="act-title">🆕 Últimos cadastros</div><div id="act-players"></div></div>
+        <div class="act-card"><div class="act-title">🏪 Últimos anúncios</div><div id="act-listings"></div></div>
+      </div>
+    </div>
+
+    <div id="tab-players" class="adm-panel">
+      <div class="flt-bar">
+        <input id="flt-p-q" type="text" placeholder="🔍 Nick ou SteamID...">
+        <select id="flt-p-status">
+          <option value="all">Todos</option>
+          <option value="active">Ativos</option>
+          <option value="banned">Banidos</option>
+        </select>
+        <select id="flt-p-sort">
+          <option value="hours">Ordenar: Horas</option>
+          <option value="kd">Ordenar: K/D</option>
+          <option value="inv">Ordenar: Inventário</option>
+          <option value="login">Ordenar: Último login</option>
+        </select>
+        <span class="flt-count" id="cnt-players"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table class="adm-table">
+          <thead><tr><th>#</th><th>Jogador</th><th>Horas</th><th>K/D</th><th>HS%</th><th>Inventário</th><th>Rating</th><th>Último login</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tb-players"><tr><td colspan="10" style="text-align:center;color:var(--text-dim);padding:2rem">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pg-players"></div>
+    </div>
+
+    <div id="tab-market" class="adm-panel">
+      <div class="flt-bar">
+        <input id="flt-m-q" type="text" placeholder="🔍 Item ou vendedor...">
+        <select id="flt-m-status">
+          <option value="all">Todos</option>
+          <option value="active">Ativos</option>
+          <option value="removed">Removidos</option>
+        </select>
+        <span class="flt-count" id="cnt-market"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table class="adm-table">
+          <thead><tr><th>Item</th><th>Vendedor</th><th>Discord</th><th>USD</th><th>BRL</th><th>Descrição</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="tb-market"><tr><td colspan="9" style="text-align:center;color:var(--text-dim);padding:2rem">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pg-market"></div>
+    </div>
+
+    <div id="tab-logs" class="adm-panel">
+      <div class="flt-bar">
+        <input id="flt-l-q" type="text" placeholder="🔍 Filtrar logs...">
+        <select id="flt-l-type">
+          <option value="all">Todos</option>
+          <option value="ban">Bans</option>
+          <option value="delete">Deleções</option>
+          <option value="listing">Anúncios</option>
+        </select>
+        <button class="btn-sm btn-red" onclick="clearLogs()">🗑️ Limpar</button>
+      </div>
+      <div id="logs-container"></div>
+    </div>
+  </div>
+</div>
 </main>
 
-<footer><p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>.</p></footer>
+<div class="modal-overlay" id="modal-ban">
+  <div class="modal-box">
+    <button class="modal-close-x" onclick="fecharModal('modal-ban')">✕</button>
+    <h3>⛔ Banir Jogador</h3>
+    <div class="modal-player-preview" id="ban-preview"></div>
+    <div class="fg"><label>Motivo</label><textarea id="ban-reason" placeholder="Descreva o motivo..."></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn-confirm" onclick="confirmarBan()">⛔ Confirmar Ban</button>
+      <button class="modal-btn-cancel" onclick="fecharModal('modal-ban')">Cancelar</button>
+    </div>
+  </div>
+</div>
 
-<!-- auth.js DEVE vir antes de admin.js para que ADMIN_ID e AUTH existam -->
+<div class="modal-overlay" id="modal-del-player">
+  <div class="modal-box">
+    <button class="modal-close-x" onclick="fecharModal('modal-del-player')">✕</button>
+    <h3>🗑️ Deletar Jogador</h3>
+    <div class="modal-player-preview" id="del-player-preview"></div>
+    <p style="font-size:.86rem;color:var(--text-dim);margin-bottom:1.2rem">Isso deletará o jogador e todos os seus anúncios permanentemente.</p>
+    <div class="modal-actions">
+      <button class="modal-btn-confirm" onclick="confirmarDeletePlayer()">🗑️ Deletar</button>
+      <button class="modal-btn-cancel" onclick="fecharModal('modal-del-player')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-del-listing">
+  <div class="modal-box">
+    <button class="modal-close-x" onclick="fecharModal('modal-del-listing')">✕</button>
+    <h3>🗑️ Remover Anúncio</h3>
+    <div class="modal-item-preview" id="del-listing-preview"></div>
+    <p style="font-size:.86rem;color:var(--text-dim);margin-bottom:1.2rem">O anúncio será removido e não aparecerá mais para os usuários.</p>
+    <div class="modal-actions">
+      <button class="modal-btn-confirm" onclick="confirmarDelListing()">🗑️ Remover</button>
+      <button class="modal-btn-cancel" onclick="fecharModal('modal-del-listing')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer><p>CS2HUB — Não afiliado com <span>Valve</span> ou <span>Steam</span>.</p></footer>
 <script src="/js/auth.js"></script>
 <script src="/js/main.js"></script>
-<script src="/js/admin.js"></script>
+<script>
+const ADMIN_ID = "76561199851942884";
+const PER_PAGE = 20;
+let allPlayers = [], allListings = [];
+let adminLogs = JSON.parse(localStorage.getItem('admin_logs') || '[]');
+let banTarget = null, delPlayerTarget = null, delListingTarget = null;
+let pgP = 1, pgM = 1;
+
+function toast(msg, type = 'ok', ms = 2800) {
+  const el = document.getElementById('toast');
+  el.textContent = (type === 'ok' ? '✅ ' : '❌ ') + msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => { el.className = 'toast'; }, ms);
+}
+
+function esc(s) {
+  return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function relTime(ts) {
+  const d = Date.now() - ts;
+  if (d < 60000) return 'agora';
+  if (d < 3600000) return `${Math.floor(d/60000)}m atrás`;
+  if (d < 86400000) return `${Math.floor(d/3600000)}h atrás`;
+  return `${Math.floor(d/86400000)}d atrás`;
+}
+
+function showTab(btn, tab) {
+  document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`)?.classList.add('active');
+  btn.classList.add('active');
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function initAdmin() {
+  const user = window.AUTH?.getUser?.();
+  const sid  = user?.steam_id || user?.steamid;
+  document.getElementById('adm-loading')?.classList.add('hidden');
+  if (!user || sid !== ADMIN_ID) {
+    document.getElementById('adm-denied')?.classList.remove('hidden');
+    return;
+  }
+  document.getElementById('adm-content')?.classList.remove('hidden');
+  document.getElementById('adm-pills').innerHTML = `
+    <div class="adm-pill"><div class="adm-pill-dot"></div>Online</div>
+    <div class="adm-pill">👤 ${esc(user.nick || user.personaname || 'Admin')}</div>
+    <div class="adm-pill">🕐 ${new Date().toLocaleString('pt-BR')}</div>`;
+  await Promise.all([loadPlayers(), loadListings()]);
+  buildOverview();
+  renderLogs();
+  ['flt-p-q','flt-p-status','flt-p-sort'].forEach(id =>
+    document.getElementById(id)?.addEventListener('change', () => { pgP = 1; applyPlayersFilter(); })
+  );
+  document.getElementById('flt-p-q')?.addEventListener('input', () => { pgP = 1; applyPlayersFilter(); });
+  ['flt-m-q','flt-m-status'].forEach(id =>
+    document.getElementById(id)?.addEventListener('change', () => { pgM = 1; applyMarketFilter(); })
+  );
+  document.getElementById('flt-m-q')?.addEventListener('input', () => { pgM = 1; applyMarketFilter(); });
+  ['flt-l-q','flt-l-type'].forEach(id =>
+    document.getElementById(id)?.addEventListener('input', renderLogs)
+  );
+}
+
+async function loadPlayers() {
+  try {
+    const d = await (await fetch('/ranking-api?limit=1000')).json();
+    allPlayers = d.players || [];
+    applyPlayersFilter();
+  } catch(e) { console.error(e); }
+}
+
+async function loadListings() {
+  try {
+    const d = await (await fetch('/api/market-list')).json();
+    allListings = d.listings || [];
+    applyMarketFilter();
+  } catch(e) { console.error(e); }
+}
+
+function buildOverview() {
+  const banned = allPlayers.filter(p => p.banned).length;
+  const active = allListings.filter(l => l.status === 'active').length;
+  const totInv = allPlayers.reduce((s,p) => s + (p.inventory_value||0), 0);
+  const avgH   = allPlayers.length ? Math.round(allPlayers.reduce((s,p) => s + (p.hours||0), 0) / allPlayers.length) : 0;
+  const avgKD  = allPlayers.length ? (allPlayers.reduce((s,p) => s + (parseFloat(p.kd)||0), 0) / allPlayers.length).toFixed(2) : '0.00';
+  const topRat = allPlayers.reduce((m,p) => Math.max(m, p.premier_rating||0), 0);
+  document.getElementById('s-players').textContent  = allPlayers.length;
+  document.getElementById('s-banned').textContent   = banned;
+  document.getElementById('s-listings').textContent = allListings.length;
+  document.getElementById('s-active').textContent   = active;
+  document.getElementById('s-inv').textContent      = `$${totInv.toFixed(0)}`;
+  document.getElementById('s-avgh').textContent     = `${avgH}h`;
+  document.getElementById('s-avgkd').textContent    = avgKD;
+  document.getElementById('s-toprat').textContent   = topRat.toLocaleString();
+  buildCharts();
+  buildActivity();
+}
+
+function buildCharts() {
+  const t5kd  = [...allPlayers].sort((a,b) => parseFloat(b.kd||0) - parseFloat(a.kd||0)).slice(0,5);
+  const t5hrs = [...allPlayers].sort((a,b) => (b.hours||0) - (a.hours||0)).slice(0,5);
+  const t5inv = [...allPlayers].sort((a,b) => (b.inventory_value||0) - (a.inventory_value||0)).slice(0,5);
+  function bars(items, valFn, maxFn) {
+    const max = maxFn(items) || 1;
+    return items.map(p => `
+      <div class="bar-row">
+        <span class="bar-label" title="${esc(p.nick)}">${esc(p.nick)}</span>
+        <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(valFn(p)/max*100)}%"></div></div>
+        <span class="bar-val">${valFn(p)}</span>
+      </div>`).join('');
+  }
+  document.getElementById('chart-kd').innerHTML  = bars(t5kd,  p => p.kd,                          its => Math.max(...its.map(p => parseFloat(p.kd||0))));
+  document.getElementById('chart-hrs').innerHTML = bars(t5hrs, p => `${p.hours}h`,                  its => Math.max(...its.map(p => p.hours||0)));
+  document.getElementById('chart-inv').innerHTML = bars(t5inv, p => `$${(p.inventory_value||0).toFixed(0)}`, its => Math.max(...its.map(p => p.inventory_value||0)));
+}
+
+function buildActivity() {
+  const l5p = [...allPlayers].sort((a,b) => (b.last_login||0) - (a.last_login||0)).slice(0,5);
+  const l5l = [...allListings].sort((a,b) => (b.created_at||0) - (a.created_at||0)).slice(0,5);
+  document.getElementById('act-players').innerHTML = l5p.length
+    ? l5p.map(p => `<div class="act-item">
+        <img src="${p.avatar||''}" onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'">
+        <div class="act-item-info"><div class="act-item-name">${esc(p.nick)}</div><div class="act-item-sub">${p.steam_id}</div></div>
+        <span class="act-item-val">${p.last_login ? relTime(p.last_login) : '—'}</span>
+      </div>`).join('')
+    : '<p style="color:var(--text-dim);font-size:.84rem">Nenhum dado</p>';
+  document.getElementById('act-listings').innerHTML = l5l.length
+    ? l5l.map(l => `<div class="act-item">
+        ${l.item_icon ? `<img src="https://community.cloudflare.steamstatic.com/economy/image/${l.item_icon}/60fx45f" style="object-fit:contain;height:30px">` : '<span style="font-size:1.3rem">🔫</span>'}
+        <div class="act-item-info"><div class="act-item-name">${esc(l.item_name)}</div><div class="act-item-sub">${esc(l.nick||l.steam_id)}</div></div>
+        <span class="act-item-val">$${parseFloat(l.price_usd||0).toFixed(2)}</span>
+      </div>`).join('')
+    : '<p style="color:var(--text-dim);font-size:.84rem">Nenhum dado</p>';
+}
+
+function applyPlayersFilter() {
+  const q      = (document.getElementById('flt-p-q')?.value || '').toLowerCase();
+  const status = document.getElementById('flt-p-status')?.value || 'all';
+  const sort   = document.getElementById('flt-p-sort')?.value || 'hours';
+  let list = [...allPlayers];
+  if (q)               list = list.filter(p => p.nick?.toLowerCase().includes(q) || p.steam_id?.includes(q));
+  if (status === 'active')  list = list.filter(p => !p.banned);
+  if (status === 'banned')  list = list.filter(p => p.banned);
+  if (sort === 'hours') list.sort((a,b) => (b.hours||0) - (a.hours||0));
+  if (sort === 'kd')    list.sort((a,b) => parseFloat(b.kd||0) - parseFloat(a.kd||0));
+  if (sort === 'inv')   list.sort((a,b) => (b.inventory_value||0) - (a.inventory_value||0));
+  if (sort === 'login') list.sort((a,b) => (b.last_login||0) - (a.last_login||0));
+  document.getElementById('cnt-players').textContent = `${list.length} jogadores`;
+  renderPlayers(list);
+}
+
+function renderPlayers(list) {
+  const total = Math.ceil(list.length / PER_PAGE);
+  const slice = list.slice((pgP-1)*PER_PAGE, pgP*PER_PAGE);
+  const tbody = document.getElementById('tb-players');
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-dim);padding:2rem">Nenhum jogador encontrado.</td></tr>';
+    renderPg('pg-players', total, pgP, p => { pgP = p; applyPlayersFilter(); });
+    return;
+  }
+  tbody.innerHTML = slice.map((p, i) => {
+    const kd  = parseFloat(p.kd||0);
+    const kdC = kd >= 1.2 ? '#00b894' : kd <= 0.85 ? '#e74c3c' : 'var(--text-primary)';
+    const rank = (pgP-1)*PER_PAGE + i + 1;
+    return `
+    <tr style="${p.banned ? 'opacity:.5' : ''}">
+      <td style="color:var(--text-dim);font-family:monospace;font-size:.8rem">#${rank}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.55rem">
+          <img src="${p.avatar||''}" style="width:32px;height:32px;border-radius:5px;object-fit:cover;flex-shrink:0"
+               onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'">
+          <div>
+            <a href="/jogador.html?id=${p.steam_id}" style="color:var(--text-primary);font-weight:600;font-size:.86rem">${esc(p.nick)}</a>
+            <div style="font-size:.68rem;color:var(--text-dim);font-family:monospace">${p.steam_id}</div>
+          </div>
+        </div>
+      </td>
+      <td><b>${p.hours||0}</b>h</td>
+      <td style="color:${kdC};font-weight:600">${p.kd||'—'}</td>
+      <td>${p.hs_percent||0}%</td>
+      <td>$${(p.inventory_value||0).toFixed(2)}</td>
+      <td style="font-size:.8rem;color:${(p.premier_rating||0)>=10000?'var(--orange)':'var(--text-secondary)'}">${(p.premier_rating||0).toLocaleString()}</td>
+      <td style="font-size:.76rem;color:var(--text-dim)">${p.last_login ? new Date(p.last_login).toLocaleDateString('pt-BR') : '—'}</td>
+      <td><span class="${p.banned ? 'badge-ban' : 'badge-ok'}">${p.banned ? '⛔ Banido' : '✓ Ativo'}</span></td>
+      <td>
+        <div class="btn-row">
+          ${p.steam_id !== ADMIN_ID ? `
+            <button class="btn-sm ${p.banned ? 'btn-green' : 'btn-red'}"
+              onclick="${p.banned ? `desbanir('${p.steam_id}')` : `abrirBan('${p.steam_id}','${esc(p.nick)}','${esc(p.avatar||'')}')`}">
+              ${p.banned ? '✓ Desbanir' : '⛔ Banir'}
+            </button>
+            <button class="btn-sm btn-blue" onclick="window.open('/jogador.html?id=${p.steam_id}','_blank')">👁️</button>
+            <button class="btn-sm btn-red" onclick="abrirDelPlayer('${p.steam_id}','${esc(p.nick)}','${esc(p.avatar||'')}')">🗑️</button>
+          ` : '<span style="color:var(--orange);font-size:.8rem;font-weight:700">👑 Admin</span>'}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  renderPg('pg-players', total, pgP, p => { pgP = p; applyPlayersFilter(); });
+}
+
+function applyMarketFilter() {
+  const q      = (document.getElementById('flt-m-q')?.value || '').toLowerCase();
+  const status = document.getElementById('flt-m-status')?.value || 'all';
+  let list = [...allListings];
+  if (q)                  list = list.filter(l => l.item_name?.toLowerCase().includes(q) || l.nick?.toLowerCase().includes(q) || l.discord_user?.toLowerCase().includes(q));
+  if (status === 'active')   list = list.filter(l => l.status === 'active');
+  if (status === 'removed')  list = list.filter(l => l.status !== 'active');
+  list.sort((a,b) => (b.created_at||0) - (a.created_at||0));
+  document.getElementById('cnt-market').textContent = `${list.length} anúncios`;
+  renderMarket(list);
+}
+
+function renderMarket(list) {
+  const total = Math.ceil(list.length / PER_PAGE);
+  const slice = list.slice((pgM-1)*PER_PAGE, pgM*PER_PAGE);
+  const tbody = document.getElementById('tb-market');
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-dim);padding:2rem">Nenhum anúncio.</td></tr>';
+    renderPg('pg-market', total, pgM, p => { pgM = p; applyMarketFilter(); });
+    return;
+  }
+  tbody.innerHTML = slice.map(l => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:.55rem">
+          ${l.item_icon ? `<img src="https://community.cloudflare.steamstatic.com/economy/image/${l.item_icon}/60fx45f" style="height:36px;object-fit:contain">` : '<span style="font-size:1.3rem">🔫</span>'}
+          <span style="font-size:.84rem;font-weight:600;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.item_name)}</span>
+        </div>
+      </td>
+      <td>
+        <div style="font-size:.84rem">${esc(l.nick||'—')}</div>
+        <div style="font-size:.68rem;color:var(--text-dim);font-family:monospace">${l.steam_id}</div>
+      </td>
+      <td>
+        ${l.discord_user
+          ? `<span style="font-size:.8rem;background:rgba(88,101,242,.12);color:#aab0f5;padding:.18rem .55rem;border-radius:20px;white-space:nowrap">${esc(l.discord_user)}</span>`
+          : '<span style="color:var(--text-dim);font-size:.78rem">—</span>'}
+      </td>
+      <td><b style="color:var(--orange)">$${parseFloat(l.price_usd||0).toFixed(2)}</b></td>
+      <td style="color:var(--text-dim);font-size:.8rem">R$ ${parseFloat(l.price_brl||l.price_usd*5||0).toFixed(2)}</td>
+      <td style="font-size:.78rem;color:var(--text-dim);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.description||'—')}</td>
+      <td><span class="${l.status === 'active' ? 'badge-ok' : 'badge-ban'}">${l.status === 'active' ? '✓ Ativo' : '✕ Removido'}</span></td>
+      <td style="font-size:.76rem;color:var(--text-dim);white-space:nowrap">${l.created_at ? new Date(l.created_at).toLocaleDateString('pt-BR') : '—'}</td>
+      <td>
+        ${l.status === 'active'
+          ? `<button class="btn-sm btn-red" onclick="abrirDelListing('${l.id}','${esc(l.item_name)}','${l.item_icon||''}','${parseFloat(l.price_usd||0).toFixed(2)}')">🗑️ Remover</button>`
+          : '<span style="color:var(--text-dim);font-size:.78rem">—</span>'}
+      </td>
+    </tr>`).join('');
+  renderPg('pg-market', total, pgM, p => { pgM = p; applyMarketFilter(); });
+}
+
+function renderPg(containerId, total, current, onChange) {
+  const el = document.getElementById(containerId);
+  if (!el || total <= 1) { if (el) el.innerHTML = ''; return; }
+  el.innerHTML = Array.from({length: total}, (_, i) => i+1)
+    .map(i => `<button class="pg-btn ${i === current ? 'active' : ''}" onclick="(${onChange.toString()})(${i})">${i}</button>`)
+    .join('');
+}
+
+function abrirBan(steamId, nick, avatar) {
+  banTarget = steamId;
+  document.getElementById('ban-preview').innerHTML = `
+    <img src="${esc(avatar)}" onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'" style="width:44px;height:44px;border-radius:6px;object-fit:cover">
+    <div><div style="font-weight:600;font-size:.9rem">${esc(nick)}</div><div style="font-size:.7rem;color:var(--text-dim);font-family:monospace">${steamId}</div></div>`;
+  document.getElementById('ban-reason').value = '';
+  abrirModal('modal-ban');
+}
+
+async function confirmarBan() {
+  if (!banTarget) return;
+  const reason = document.getElementById('ban-reason').value.trim() || 'Sem motivo';
+  try {
+    const res = await fetch('/api/admin-ban', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ steam_id: banTarget, banned: true, reason }) });
+    if (!res.ok) throw new Error((await res.json()).error || 'Erro');
+    const p = allPlayers.find(x => x.steam_id === banTarget);
+    if (p) p.banned = true;
+    addLog('ban', `Jogador ${p?.nick || banTarget} banido. Motivo: ${reason}`);
+    fecharModal('modal-ban'); toast('Jogador banido.'); applyPlayersFilter(); buildOverview();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+async function desbanir(steamId) {
+  try {
+    const res = await fetch('/api/admin-ban', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ steam_id: steamId, banned: false }) });
+    if (!res.ok) throw new Error((await res.json()).error || 'Erro');
+    const p = allPlayers.find(x => x.steam_id === steamId);
+    if (p) p.banned = false;
+    addLog('ban', `Jogador ${p?.nick || steamId} desbanido.`);
+    toast('Jogador desbanido.'); applyPlayersFilter(); buildOverview();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+function abrirDelPlayer(steamId, nick, avatar) {
+  delPlayerTarget = steamId;
+  document.getElementById('del-player-preview').innerHTML = `
+    <img src="${esc(avatar)}" onerror="this.src='https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg'" style="width:44px;height:44px;border-radius:6px;object-fit:cover">
+    <div><div style="font-weight:600;font-size:.9rem">${esc(nick)}</div><div style="font-size:.7rem;color:var(--text-dim);font-family:monospace">${steamId}</div></div>`;
+  abrirModal('modal-del-player');
+}
+
+async function confirmarDeletePlayer() {
+  if (!delPlayerTarget) return;
+  try {
+    const res = await fetch('/api/admin-delete-player', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ steam_id: delPlayerTarget }) });
+    if (!res.ok) throw new Error((await res.json()).error || 'Erro');
+    const p = allPlayers.find(x => x.steam_id === delPlayerTarget);
+    addLog('delete', `Jogador ${p?.nick || delPlayerTarget} deletado permanentemente.`);
+    allPlayers  = allPlayers.filter(x => x.steam_id !== delPlayerTarget);
+    allListings = allListings.filter(x => x.steam_id !== delPlayerTarget);
+    fecharModal('modal-del-player'); toast('Jogador deletado.'); applyPlayersFilter(); applyMarketFilter(); buildOverview();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+function abrirDelListing(id, nome, icon, price) {
+  delListingTarget = id;
+  document.getElementById('del-listing-preview').innerHTML = `
+    ${icon ? `<img src="https://community.cloudflare.steamstatic.com/economy/image/${icon}/60fx45f" style="height:44px;object-fit:contain">` : '<span style="font-size:1.8rem">🔫</span>'}
+    <div><div style="font-weight:600;font-size:.9rem">${esc(nome)}</div><div class="modal-item-price">$${price}</div></div>`;
+  abrirModal('modal-del-listing');
+}
+
+async function confirmarDelListing() {
+  if (!delListingTarget) return;
+  try {
+    const res = await fetch('/api/admin-remove-listing', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id: delListingTarget }) });
+    if (!res.ok) throw new Error((await res.json()).error || 'Erro');
+    const l = allListings.find(x => x.id === delListingTarget);
+    if (l) l.status = 'removed';
+    addLog('listing', `Anúncio "${l?.item_name}" removido.`);
+    fecharModal('modal-del-listing'); toast('Anúncio removido.'); applyMarketFilter(); buildOverview();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+function addLog(type, msg) {
+  adminLogs.unshift({ type, msg, ts: Date.now() });
+  if (adminLogs.length > 200) adminLogs = adminLogs.slice(0, 200);
+  localStorage.setItem('admin_logs', JSON.stringify(adminLogs));
+  renderLogs();
+}
+
+function renderLogs() {
+  const q    = (document.getElementById('flt-l-q')?.value || '').toLowerCase();
+  const type = document.getElementById('flt-l-type')?.value || 'all';
+  let list   = [...adminLogs];
+  if (q)            list = list.filter(l => l.msg.toLowerCase().includes(q));
+  if (type !== 'all') list = list.filter(l => l.type === type);
+  const icons = { ban:'⛔', delete:'🗑️', listing:'🏪' };
+  const bords = { ban:'#e74c3c', delete:'#e74c3c', listing:'var(--orange)' };
+  const el    = document.getElementById('logs-container');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:2rem;font-size:.85rem">Nenhum log.</p>'; return; }
+  el.innerHTML = list.map(l => `
+    <div class="log-item" style="border-left:3px solid ${bords[l.type]||'var(--border-subtle)'}">
+      <span class="log-icon">${icons[l.type]||'📋'}</span>
+      <span class="log-msg">${esc(l.msg)}</span>
+      <span class="log-ts">${new Date(l.ts).toLocaleString('pt-BR')}</span>
+    </div>`).join('');
+}
+
+function clearLogs() {
+  if (!confirm('Limpar todos os logs?')) return;
+  adminLogs = [];
+  localStorage.removeItem('admin_logs');
+  renderLogs();
+}
+
+['modal-ban','modal-del-player','modal-del-listing'].forEach(id => {
+  document.getElementById(id)?.addEventListener('click', e => { if (e.target === e.currentTarget) fecharModal(id); });
+});
+
+document.addEventListener('DOMContentLoaded', initAdmin);
+</script>
 </body>
 </html>
